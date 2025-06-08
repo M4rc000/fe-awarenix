@@ -61,6 +61,7 @@ export default function App() {
           </Route>
 
           {/* Auth Layout */}
+          <Route path="/" element={<SignIn />} />
           <Route path="/login" element={<SignIn />} />
           <Route path="/register" element={<SignUp />} />
 
