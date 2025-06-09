@@ -22,8 +22,14 @@ import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
+import ShowGroupDetailModal from './ShowGroupDetailModal';
+import EditGroupModal from './EditGroupModal';
+import DeleteGroupModal from './DeleteGroupModal';
 
 export default function TableUsersGroups() {
+  // const [modalOpen, setModalOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
+
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
   const [pagination, setPagination] = useState({
@@ -33,6 +39,10 @@ export default function TableUsersGroups() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const onShowDetail = () => setActiveModal('detail');
+  const onEditGroup = () => setActiveModal('edit');
+  const onDeleteGroup = () => setActiveModal('delete'); 
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -105,17 +115,17 @@ export default function TableUsersGroups() {
         header: 'Action',
         cell: () => (
           <div className="flex items-center space-x-2">
-            <Button size="xs" variant="info">
+            <Button size="xs" variant="info" onClick={onShowDetail}>
               <FaCircleInfo />
             </Button>
-            <Button size="xs" variant="warning">
+            <Button size="xs" variant="warning" onClick={onEditGroup}>
               <BiSolidEditAlt />
             </Button>
-            <Button size="xs" variant="danger">
+            <Button size="xs" variant="danger" onClick={onDeleteGroup}>
               <FaRegTrashAlt />
             </Button>
           </div>
-        ),
+        )
       },
     ],
     []
@@ -342,6 +352,24 @@ export default function TableUsersGroups() {
           </div>
         </div>
       </div>
+
+      {/* SHOW MODAL */}
+      <ShowGroupDetailModal 
+        isOpen={activeModal === 'detail'}
+        onClose={() => setActiveModal(null)}
+      />
+
+      {/* EDIT MODAL */}
+      <EditGroupModal 
+        isOpen={activeModal === 'edit'}
+        onClose={() => setActiveModal(null)}
+      />
+
+      {/* DELETE MODAL */}
+      <DeleteGroupModal 
+        isOpen={activeModal === 'delete'}
+        onClose={() => setActiveModal(null)}
+      />      
     </div>
   );
 }

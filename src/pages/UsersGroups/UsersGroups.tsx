@@ -6,8 +6,9 @@ import Button from "../../components/ui/button/Button";
 import NewGroupModal from "../../components/usersgroups/NewGroupModal";
 import TableUsersGroups from "../../components/usersgroups/TableUsersGroups";
 
-export default function Campaigns() {
+export default function UsersGroups() {
   const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <>
       <Breadcrump icon={<GroupIcon/>} title="Users & Groups" />

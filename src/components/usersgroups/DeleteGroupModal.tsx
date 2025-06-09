@@ -6,17 +6,17 @@ import {
   Transition,
 } from '@headlessui/react'
 import { Fragment } from 'react'
-import NewGroupModalForm from './NewGroupModalForm'
+import DeleteGroupModalForm from './DeleteGroupModalForm'
 
-export type NewGroupModalProps = {
+export type DeleteGroupModalProps = {
   isOpen: boolean
   onClose: () => void
 }
 
-export default function NewGroupModal({
+export default function DeleteGroupModal({
   isOpen,
   onClose,
-}: NewGroupModalProps) {
+}: DeleteGroupModalProps) {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog open={isOpen} onClose={()=>{}} className="relative z-[999]">
@@ -33,7 +33,7 @@ export default function NewGroupModal({
           <DialogBackdrop className="fixed inset-0 bg-black/40" />
         </Transition.Child>
 
-        <div className="fixed inset-0 flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 flex items-center justify-center p-4"  onClick={(e) => e.stopPropagation()}>
           {/* Panel with scale & slide-up animation */}
           <Transition.Child
             as={Fragment}
@@ -46,22 +46,15 @@ export default function NewGroupModal({
           >
             <DialogPanel className="w-full max-w-fit box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5 z-[9999999999999]" onClick={(e) => e.stopPropagation()}>
               {/* HEADER */}
-              <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
-                <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  New Group
-                </DialogTitle>
-                <button
-                  onClick={onClose}
-                  aria-label="Close modal"
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              </div>
+                <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
+                    <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Confirmation Delete Group ?
+                    </DialogTitle>
+                </div>
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <NewGroupModalForm />
+                <DeleteGroupModalForm />
               </div>
 
               {/* FOOTER */}
@@ -78,7 +71,7 @@ export default function NewGroupModal({
                   }}
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  Save
+                  Confirm
                 </button>
               </div>
             </DialogPanel>

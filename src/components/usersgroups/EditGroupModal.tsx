@@ -6,17 +6,17 @@ import {
   Transition,
 } from '@headlessui/react'
 import { Fragment } from 'react'
-import NewGroupModalForm from './NewGroupModalForm'
+import EditGroupModalForm from './EditGroupModalForm'
 
-export type NewGroupModalProps = {
+export type EditGroupModalProps = {
   isOpen: boolean
   onClose: () => void
 }
 
-export default function NewGroupModal({
+export default function EditGroupModal({
   isOpen,
   onClose,
-}: NewGroupModalProps) {
+}: EditGroupModalProps) {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog open={isOpen} onClose={()=>{}} className="relative z-[999]">
@@ -48,7 +48,7 @@ export default function NewGroupModal({
               {/* HEADER */}
               <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  New Group
+                  Edit Group
                 </DialogTitle>
                 <button
                   onClick={onClose}
@@ -61,7 +61,7 @@ export default function NewGroupModal({
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <NewGroupModalForm />
+                <EditGroupModalForm />
               </div>
 
               {/* FOOTER */}
