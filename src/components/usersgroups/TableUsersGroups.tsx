@@ -15,20 +15,15 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { HiOutlineMail } from "react-icons/hi";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { FaRegTrashAlt } from "react-icons/fa";
 import { BiSolidEditAlt } from "react-icons/bi";
-import { HiOutlineMailOpen } from "react-icons/hi";
-import { LuMousePointerClick } from "react-icons/lu";
-import { BiError } from "react-icons/bi";
-import { HiOutlineSpeakerphone } from "react-icons/hi";
 import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
 
-export default function TableCampaigns() {
+export default function TableUsersGroups() {
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
   const [pagination, setPagination] = useState({
@@ -54,205 +49,34 @@ export default function TableCampaigns() {
     };
   }, []);
 
-  interface Campaign {
+  interface UserGroups {
     id: number;
-    name: string;
-    schedule: string;
-    type: string;
-    emailSent: number;
-    emailOpened: number;
-    clicks: number;
-    errors: number;
-    impressions: number;
-    status: string;
+    groupName: string;
+    groupMembers: number;
+    domainVerificationStatus: string;
+    lastModified: string;
   }
 
-  const tableData: Campaign[] = [
-  {
+  const tableData: UserGroups[] = [
+    {
       id: 1,
-      name: "Testing SMTP",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 20,
-      emailOpened: 5,
-      clicks: 5,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
+      groupName: 'Marketing Team',
+      groupMembers: 5,
+      domainVerificationStatus: 'i-3.co.id',
+      lastModified: '04/06/2025',
     },
     {
       id: 2,
-      name: "Testing SMTP 2",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 20,
-      emailOpened: 15,
-      clicks: 5,
-      errors: 1,
-      impressions: 10,
-      status: "Pending",
-    },
-    {
-      id: 3,
-      name: "Testing 1",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 6,
-      clicks: 5,
-      errors: 1,
-      impressions: 5,
-      status: "Completed",
-    },
-    {
-      id: 4,
-      name: "Testing SMTP Mailtrap",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 20,
-      emailOpened: 10,
-      clicks: 5,
-      errors: 1,
-      impressions: 10,
-      status: "Pending",
-    },
-    {
-      id: 5,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 6,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 7,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 8,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 9,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 10,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 11,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 12,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 13,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 14,
-      name: "Testing Mailgun",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
-    {
-      id: 15,
-      name: "Testing Aja",
-      schedule: "01 March 2025",
-      type: "Phising ",
-      emailSent: 10,
-      emailOpened: 4,
-      clicks: 7,
-      errors: 1,
-      impressions: 10,
-      status: "Completed",
-    },
+      groupName: 'Finance Team',
+      groupMembers: 10,
+      domainVerificationStatus: 'i-3.co.id',
+      lastModified: '04/06/2025',
+    },    
   ];
 
   const data = useMemo(() => tableData, []);
 
-  const columns = useMemo<ColumnDef<Campaign>[]>(
+  const columns = useMemo<ColumnDef<UserGroups>[]>(
     () => [
       {
         accessorKey: 'id',
@@ -260,40 +84,20 @@ export default function TableCampaigns() {
         cell: info => info.row.index + 1,
       },
       {
-        accessorKey: 'name',
-        header: 'Campaign Name',
+        accessorKey: 'groupName',
+        header: 'Group Name',
       },
       {
-        accessorKey: 'schedule',
-        header: 'Schedule',
+        accessorKey: 'groupMembers',
+        header: 'Group Members',
       },
       {
-        accessorKey: 'type',
-        header: 'Type',
+        accessorKey: 'domainVerificationStatus',
+        header: 'Domain Verification Status',
       },
       {
-        accessorKey: 'emailSent',
-        header: () => <HiOutlineMail className="text-xl text-green-600" />,
-      },
-      {
-        accessorKey: 'emailOpened',
-        header: () => <HiOutlineMailOpen className="text-xl text-yellow-600" />,
-      },
-      {
-        accessorKey: 'clicks',
-        header: () => <LuMousePointerClick className="text-xl text-blue-600" />,
-      },
-      {
-        accessorKey: 'errors',
-        header: () => <BiError className="text-xl text-red-600" />,
-      },
-      {
-        accessorKey: 'impressions',
-        header: () => <HiOutlineSpeakerphone className="text-xl text-cyan-600" />,
-      },
-      {
-        accessorKey: 'status',
-        header: 'Status',
+        accessorKey: 'lastModified',
+        header: 'Last Modified',
       },
       {
         id: 'actions',
@@ -408,7 +212,7 @@ export default function TableCampaigns() {
                       className="
                         relative 
                         px-5 py-3 pr-6
-                        text-start text-gray-500 text-sm 
+                        text-center text-gray-500 text-sm 
                         cursor-pointer select-none
                       "
                       >
@@ -419,20 +223,20 @@ export default function TableCampaigns() {
                         {canSort && (
                           <div className="mt-1 w-1 text-xs">
                             <span
-                              className={
-                                isSorted === "asc"
+                              className={`
+                                ${isSorted === "asc"
                                   ? "text-gray-800"
-                                  : "text-gray-300"
-                              }
+                                  : "text-gray-300"}
+                            `}
                             >
                               ▲
                             </span>
                             <span
-                              className={
-                                isSorted === "desc"
+                              className={`mr-22
+                                ${isSorted === "desc"
                                   ? "text-gray-800"
                                   : "text-gray-300"
-                              }
+                              }`}
                             >
                               ▼
                             </span>
@@ -449,7 +253,7 @@ export default function TableCampaigns() {
             {table.getRowModel().rows.map(row => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600">
+                  <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -466,12 +270,6 @@ export default function TableCampaigns() {
           {table.getPageCount()}
         </div>
         <div className="space-x-2">
-          {/* <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-            Previous
-          </Button>
-          <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Next
-          </Button> */}
           <div>
             <nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md shadow-xs">
               <a

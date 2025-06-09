@@ -21,6 +21,7 @@ import { Helmet } from "react-helmet-async";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import UsersGroups from "./pages/UsersGroups/UsersGroups";
 import EmailTemplates from "./pages/EmailTemplates/EmailTemplates";
+import ForgotPassword from "./components/auth/ForgotPassword";
 
 export default function App() {
   return (
@@ -64,6 +65,7 @@ export default function App() {
           <Route path="/" element={<SignIn />} />
           <Route path="/login" element={<SignIn />} />
           <Route path="/register" element={<SignUp />} />
+          <Route path="/reset-password" element={<ForgotPassword />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />

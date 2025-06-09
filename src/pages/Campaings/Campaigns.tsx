@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CampaignsCardHeader from "../../components/campaigns/CampaignsCardHeader";
+import CardHeader from "../../components/campaigns/CardHeader";
 import Breadcrump from "../../components/utils/Breacrump";
 import {CalenderIcon} from "../../icons";
 import Button from "../../components/ui/button/Button";
@@ -13,7 +13,7 @@ export default function Campaigns() {
       <Breadcrump icon={<CalenderIcon/>} title="Campaigns" />
       <div className="grid grid-cols-12 gap-4 md:gap-6 mt-10">
         <div className="col-span-12 space-y-6 xl:col-span-7">
-          <CampaignsCardHeader />
+          <CardHeader />
         </div>
       </div>
       <Button className="text-md mt-5 mb-3" onClick={()=> setModalOpen(true)}>New Campaign</Button>
