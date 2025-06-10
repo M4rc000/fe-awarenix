@@ -6,17 +6,17 @@ import {
   Transition,
 } from '@headlessui/react'
 import { Fragment } from 'react'
-import ShowGroupDetailModalForm from './ShowGroupDetailModalForm'
+import NewEmailTemplatesModalForm from './NewEmailTemplatesModalForm'
 
-export type ShowGroupDetailModalProps = {
+export type NewGroupModalProps = {
   isOpen: boolean
   onClose: () => void
 }
 
-export default function ShowGroupDetailModal({
+export default function NewEmailTemplatesModal({
   isOpen,
   onClose,
-}: ShowGroupDetailModalProps) {
+}: NewGroupModalProps) {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog open={isOpen} onClose={onClose} className="relative z-[999]">
@@ -44,11 +44,12 @@ export default function ShowGroupDetailModal({
             leaveFrom="translate-y-0 opacity-100 scale-100"
             leaveTo="translate-y-4 opacity-0 scale-95"
           >
-            <DialogPanel className="w-full max-w-fit box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5 z-[9999999999999]">
+            <DialogPanel className="w-full xl:max-w-fit box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5 z-[9999999999999]">
+              
               {/* HEADER */}
-              <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-b-gray-700 flex-shrink-0">
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Show Detail Group
+                  New Email Template
                 </DialogTitle>
                 <button
                   onClick={onClose}
@@ -61,7 +62,7 @@ export default function ShowGroupDetailModal({
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <ShowGroupDetailModalForm />
+                <NewEmailTemplatesModalForm />
               </div>
 
               {/* FOOTER */}
@@ -70,7 +71,15 @@ export default function ShowGroupDetailModal({
                   onClick={onClose}
                   className="px-4 py-2 bg-gray-200 hover:bg-gray-400 rounded dark:hover:bg-gray-600  dark:bg-gray-400"
                 >
-                  Close
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    onClose()
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Save
                 </button>
               </div>
             </DialogPanel>

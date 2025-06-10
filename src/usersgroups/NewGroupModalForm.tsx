@@ -1,16 +1,16 @@
           
 import { useState } from "react";
-import Label from "../../components/form/Label";
-import Input from "../../components/form/input/InputField";
+import Label from "../components/form/Label";
+import Input from "../components/form/input/InputField";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "../components/ui/table";
 import { FaRegTrashAlt } from "react-icons/fa";
-import Button from "../ui/button/Button";
+import Button from "../components/ui/button/Button";
 import { useMediaQuery } from "react-responsive";
 import { BiUser } from "react-icons/bi";
 import { BsFillPersonPlusFill } from "react-icons/bs";

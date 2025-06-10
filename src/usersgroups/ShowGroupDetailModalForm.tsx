@@ -1,16 +1,14 @@
           
 import { useState, useEffect } from "react";
-import Label from "../../components/form/Label";
-import Input from "../../components/form/input/InputField";
+import Label from "../components/form/Label";
+import Input from "../components/form/input/InputField";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
-import { FaRegTrashAlt } from "react-icons/fa";
-import Button from "../ui/button/Button";
+} from "../components/ui/table";
 import { useMediaQuery } from "react-responsive";
 import { BiUser } from "react-icons/bi";
 
@@ -41,6 +39,7 @@ export default function ShowGroupDetailModalForm() {
           placeholder="Team A"
           type="text"
           className="w-full text-sm sm:text-base h-10 px-3"
+          readonly
         />
       </div>
 
@@ -64,15 +63,19 @@ export default function ShowGroupDetailModalForm() {
                 <Input
                   placeholder="Name"
                   value={user.name}
+                  readonly
                 />
                 <Input
                   placeholder="Email"
                   type="email"
                   value={user.email}
+                  readonly
+
                 />
                 <Input
                   placeholder="Position"
                   value={user.position}
+                  readonly
                 />
               </div>
             </div>
@@ -111,13 +114,6 @@ export default function ShowGroupDetailModalForm() {
                         text-center text-gray-500 text-sm 
                         cursor-pointer select-none
                       ">User Position</TableCell>
-                <TableCell isHeader
-                className="
-                        relative 
-                        px-5 py-3 pr-6
-                        text-center text-gray-500 text-sm 
-                        cursor-pointer select-none
-                      ">Action</TableCell>
               </TableRow>
             </TableHeader>
 
@@ -130,6 +126,7 @@ export default function ShowGroupDetailModalForm() {
                       placeholder="Name"
                       value={user.name}
                       className="text-sm h-9 w-full"
+                      readonly
                     />
                   </TableCell>
                   <TableCell className="px-2 pb-4">
@@ -137,6 +134,7 @@ export default function ShowGroupDetailModalForm() {
                       placeholder="Email"
                       value={user.email}
                       className="text-sm h-9 w-full"
+                      readonly
                     />
                   </TableCell>
                   <TableCell className="px-2 pb-4">
@@ -144,14 +142,8 @@ export default function ShowGroupDetailModalForm() {
                       placeholder="Position"
                       value={user.position}
                       className="text-sm h-9 w-full"
+                      readonly
                     />
-                  </TableCell>
-                  <TableCell className="px-2 text-center pb-4">
-                    <Button
-                      size="xs"
-                      variant="danger">
-                      <FaRegTrashAlt />
-                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

@@ -12,6 +12,7 @@ interface MultiSelectProps {
   defaultSelected?: string[];
   onChange?: (selected: string[]) => void;
   disabled?: boolean;
+  required?: boolean;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -49,12 +50,12 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   );
 
   return (
-    <div className="w-full">
+    <div className="w-full cursor-pointer">
       <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
         {label}
       </label>
 
-      <div className="relative z-20 inline-block w-full">
+      <div className="relative z-20 inline-block w-full cursor-pointer overflow-visible">
         <div className="relative flex flex-col items-center">
           <div onClick={toggleDropdown} className="w-full">
             <div className="mb-2 flex h-11 rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-hidden transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300">
@@ -95,7 +96,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 ) : (
                   <input
                     placeholder="Select option"
-                    className="w-full h-full p-1 pr-2 text-sm bg-transparent border-0 outline-hidden appearance-none placeholder:text-gray-800 focus:border-0 focus:outline-hidden focus:ring-0 dark:placeholder:text-white/90"
+                    className="w-full h-full p-1 pr-2 text-sm bg-transparent border-0 outline-hidden appearance-none placeholder:text-gray-800 focus:border-0 focus:outline-hidden focus:ring-0 dark:placeholder:text-white/90 dark:text-gray-600 cursor-pointer"
                     readOnly
                     value="Select option"
                   />
@@ -109,6 +110,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 >
                   <svg
                     className={`stroke-current ${isOpen ? "rotate-180" : ""}`}
+                    onClick={toggleDropdown}
                     width="20"
                     height="20"
                     viewBox="0 0 20 20"
@@ -130,7 +132,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
           {isOpen && (
             <div
-              className="absolute left-0 z-40 w-full overflow-y-auto bg-white rounded-lg shadow-sm top-full max-h-select dark:bg-gray-900"
+              className="absolute left-0 w-full overflow-y-auto bg-white rounded-lg shadow-sm top-full max-h-select dark:bg-gray-900 border-1 border-gray-300 dark:border-gray-700 overflow-visible z-50"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex flex-col">

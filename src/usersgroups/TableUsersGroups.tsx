@@ -14,14 +14,14 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "../components/ui/table";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { FaRegTrashAlt } from "react-icons/fa";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { FaCircleInfo } from "react-icons/fa6";
-import Button from "../ui/button/Button";
+import Button from "../components/ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
-import { useSidebar } from "../../context/SidebarContext";
+import { useSidebar } from "../context/SidebarContext";
 import ShowGroupDetailModal from './ShowGroupDetailModal';
 import EditGroupModal from './EditGroupModal';
 import DeleteGroupModal from './DeleteGroupModal';

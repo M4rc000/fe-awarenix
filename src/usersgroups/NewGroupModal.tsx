@@ -19,7 +19,7 @@ export default function NewGroupModal({
 }: NewGroupModalProps) {
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog open={isOpen} onClose={onClose} className="relative z-[999]">
+      <Dialog open={isOpen} onClose={()=>{}} className="relative z-[999]">
         {/* Backdrop with fade animation */}
         <Transition.Child
           as={Fragment}
@@ -33,7 +33,7 @@ export default function NewGroupModal({
           <DialogBackdrop className="fixed inset-0 bg-black/40" />
         </Transition.Child>
 
-        <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className="fixed inset-0 flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
           {/* Panel with scale & slide-up animation */}
           <Transition.Child
             as={Fragment}
@@ -44,9 +44,9 @@ export default function NewGroupModal({
             leaveFrom="translate-y-0 opacity-100 scale-100"
             leaveTo="translate-y-4 opacity-0 scale-95"
           >
-            <DialogPanel className="w-full max-w-fit box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5 z-[9999999999999]">
+            <DialogPanel className="w-full max-w-fit box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5 z-[9999999999999]" onClick={(e) => e.stopPropagation()}>
               {/* HEADER */}
-              <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-b-gray-700 flex-shrink-0">
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   New Group
                 </DialogTitle>
