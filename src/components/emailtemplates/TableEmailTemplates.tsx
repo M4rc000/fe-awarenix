@@ -23,7 +23,7 @@ import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
 
-export default function TableUsersGroups() {
+export default function TableEmailTemplates() {
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
   const [pagination, setPagination] = useState({
@@ -65,7 +65,7 @@ export default function TableUsersGroups() {
       senderAddress: "",
       subject: "Google Meet Invitation",
       body:"",
-      lastModified: "",
+      lastModified: "01 March 2025",
     },
     {
       id: 2,
@@ -73,7 +73,7 @@ export default function TableUsersGroups() {
       senderAddress: "",
       subject: "Zoom Invitation",
       body:"",
-      lastModified: "",
+      lastModified: "01 March 2025",
     },
   ];
 
@@ -87,16 +87,12 @@ export default function TableUsersGroups() {
         cell: info => info.row.index + 1,
       },
       {
-        accessorKey: 'groupName',
-        header: 'Group Name',
+        accessorKey: 'name',
+        header: 'Name',
       },
       {
-        accessorKey: 'groupMembers',
-        header: 'Group Members',
-      },
-      {
-        accessorKey: 'domainVerificationStatus',
-        header: 'Domain Verification Status',
+        accessorKey: 'subject',
+        header: 'Subject',
       },
       {
         accessorKey: 'lastModified',
@@ -142,7 +138,7 @@ export default function TableUsersGroups() {
   });
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
+    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] dark:border-gray-800 dark:border-1 border-gray-200 border-1">
       <div className="p-4 rounded-lg bg-white dark:bg-white/[0.03]">
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">

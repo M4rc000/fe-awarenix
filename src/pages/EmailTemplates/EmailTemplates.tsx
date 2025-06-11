@@ -7,7 +7,7 @@ import NewEmailTemplatesModal from "../../components/emailtemplates/NewEmailTemp
 import TableEmailTemplates from "../../components/emailtemplates/TableEmailTemplates";
 
 export default function Campaigns() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [newModalOpen, setNewModalOpen] = useState(false);
   return (
     <>
       <Breadcrump icon={<MailIcon/>} title="Email Templates" />
@@ -16,13 +16,13 @@ export default function Campaigns() {
           <CardHeader />
         </div>
       </div>
-      <Button className="text-md mt-5 mb-3" onClick={()=> setModalOpen(true)}>New Email Template</Button>
+      <Button className="text-md mt-5 mb-3" onClick={()=> setNewModalOpen(true)}>New Email Template</Button>
 
       <TableEmailTemplates/>
 
       <NewEmailTemplatesModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        isOpen={newModalOpen}
+        onClose={() => setNewModalOpen(false)}
       />
     </>
   );

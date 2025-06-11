@@ -22,7 +22,7 @@ import CardContent from "../common/CardContent";
 import SelectableCard from "../common/SelectableCard";
 import Button from "../ui/button/Button";
 
-export default function NewCampaignModalForm() {
+export default function UpdateCampaignModalForm() {
   const isMobile = useMediaQuery({ maxWidth: 640 }); // sm breakpoint
   const [campaignType, setCampaignType] = useState<string | null>(null);
   const [phisingSchedule, setphisingSchedule] = useState<string | null>(null);

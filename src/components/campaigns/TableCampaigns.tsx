@@ -27,6 +27,9 @@ import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
+import ShowCampaignModal from "../../components/campaigns/ShowCampaignModal";
+import UpdateCampaignModal from "../../components/campaigns/UpdateCampaignModal";
+import DeleteCampaignModal from "../../components/campaigns/DeleteCampaignModal";
 
 export default function TableCampaigns() {
   const [search, setSearch] = useState('');
@@ -38,6 +41,9 @@ export default function TableCampaigns() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [showModalOpen, setShowModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -301,13 +307,13 @@ export default function TableCampaigns() {
         header: 'Action',
         cell: () => (
           <div className="flex items-center space-x-2">
-            <Button size="xs" variant="info">
+            <Button size="xs" variant="info" onClick={()=>{setShowModalOpen(true)}}>
               <FaCircleInfo />
             </Button>
-            <Button size="xs" variant="warning">
+            <Button size="xs" variant="warning" onClick={()=>{setUpdateModalOpen(true)}}>
               <BiSolidEditAlt />
             </Button>
-            <Button size="xs" variant="danger">
+            <Button size="xs" variant="danger" onClick={()=>{setDeleteModalOpen(true)}}>
               <FaRegTrashAlt />
             </Button>
           </div>
@@ -544,6 +550,23 @@ export default function TableCampaigns() {
           </div>
         </div>
       </div>
+
+
+      {/* MODAL */}
+      <ShowCampaignModal
+        isOpen={showModalOpen}
+        onClose={() => setShowModalOpen(false)}
+      />
+
+      <UpdateCampaignModal
+        isOpen={updateModalOpen}
+        onClose={() => setUpdateModalOpen(false)}
+      />
+
+      <DeleteCampaignModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+      />
     </div>
   );
 }

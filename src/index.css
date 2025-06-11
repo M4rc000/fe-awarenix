@@ -10,6 +10,23 @@ layer(base);
   margin-top: -10rem !important;
   overflow-y: auto !important;
 }
+
+/* Menyamakan warna background editor dengan parent dark background */
+.rsw-editor iframe {
+  background-color: #1f2937 !important; /* Sesuaikan dengan bg-gray-800 Tailwind */
+  color-scheme: dark;
+  border-radius: 0.5rem;
+  border: 1px solid #374151;
+}
+
+/* Optional: jika iframe isi bisa diakses, ubah juga isi body-nya */
+.rsw-editor iframe body {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {

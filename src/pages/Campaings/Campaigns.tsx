@@ -7,7 +7,7 @@ import NewCampaignModal from "../../components/campaigns/NewCampaignModal";
 import TableCampaigns from "../../components/campaigns/TableCampaigns";
 
 export default function Campaigns() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [newModalOpen, setNewModalOpen] = useState(false);
   return (
     <>
       <Breadcrump icon={<CalenderIcon/>} title="Campaigns" />
@@ -16,13 +16,13 @@ export default function Campaigns() {
           <CardHeader />
         </div>
       </div>
-      <Button className="text-md mt-5 mb-3" onClick={()=> setModalOpen(true)}>New Campaign</Button>
+      <Button className="text-md mt-5 mb-3" onClick={()=> setNewModalOpen(true)}>New Campaign</Button>
 
       <TableCampaigns/>
 
       <NewCampaignModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        isOpen={newModalOpen}
+        onClose={() => setNewModalOpen(false)}
       />
     </>
   );
