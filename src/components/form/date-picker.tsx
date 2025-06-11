@@ -26,11 +26,14 @@ export default function DatePicker({
   useEffect(() => {
     const flatPickr = flatpickr(`#${id}`, {
       mode: mode || "single",
-      static: true,
+      // static: true,
+      static: false,
       monthSelectorType: "static",
       dateFormat: "Y-m-d",
       defaultDate,
       onChange,
+      appendTo: document.body, // 🟢 dropdown render di luar modal
+      position: "auto", // 🟢 biar dia auto ke atas kalau nggak muat
     });
 
     return () => {

@@ -4,6 +4,12 @@ layer(base);
 
 @import "tailwindcss";
 
+.flatpickr-calendar {
+  z-index: 999999 !important;
+  max-height: 80vh !important;
+  margin-top: -10rem !important;
+  overflow-y: auto !important;
+}
 @custom-variant dark (&:is(.dark *));
 
 @theme {
