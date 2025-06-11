@@ -22,6 +22,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import UsersGroups from "./pages/UsersGroups/UsersGroups";
 import EmailTemplates from "./pages/EmailTemplates/EmailTemplates";
 import ForgotPassword from "./components/auth/ForgotPassword";
+import SendingProfiles from "./pages/SendingProfiles/SendingProfiles"
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/campaigns" element={<Campaigns />} />
             <Route path="/users-groups" element={<UsersGroups/>} />
             <Route path="/email-templates" element={<EmailTemplates />} />
+            <Route path="/sending-profiles" element={<SendingProfiles />} />
 
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />

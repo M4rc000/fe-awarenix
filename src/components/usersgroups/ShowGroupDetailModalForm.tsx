@@ -1,14 +1,14 @@
           
 import { useState, useEffect } from "react";
-import Label from "../components/form/Label";
-import Input from "../components/form/input/InputField";
+import Label from "../form/Label";
+import Input from "../form/input/InputField";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../components/ui/table";
+} from "../ui/table";
 import { useMediaQuery } from "react-responsive";
 import { BiUser } from "react-icons/bi";
 

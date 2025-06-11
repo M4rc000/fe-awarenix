@@ -1,10 +1,10 @@
 import {
   ArrowUpIcon,
-} from "../icons";
+} from "../../icons";
 import { FaUser } from "react-icons/fa";
-import Badge from "../components/ui/badge/Badge";
+import Badge from "../ui/badge/Badge";
 import { MdGroups } from "react-icons/md";
-import { useSidebar } from "../context/SidebarContext";
+import { useSidebar } from "../../context/SidebarContext";
 
 export default function CardHeader() {
   const { isExpanded, isHovered } = useSidebar();

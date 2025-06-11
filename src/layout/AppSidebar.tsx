@@ -343,7 +343,7 @@ const AppSidebar: React.FC = () => {
             {navGroups.map((group) => (
               <div key={group.title}>
                 <h2
-                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-600 font-semibold dark:text-gray-500 ${
                     !isExpanded && !isHovered
                       ? "lg:justify-center"
                       : "justify-start"

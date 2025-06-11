@@ -1,6 +1,6 @@
           
-import Label from "../components/form/Label";
-import Input from "../components/form/input/InputField";
+import Label from "../form/Label";
+import Input from "../form/input/InputField";
 
 export default function DeleteGroupModalForm() {
   return (

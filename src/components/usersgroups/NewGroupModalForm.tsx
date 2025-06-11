@@ -1,21 +1,21 @@
           
 import { useState } from "react";
-import Label from "../components/form/Label";
-import Input from "../components/form/input/InputField";
+import Label from "../form/Label";
+import Input from "../form/input/InputField";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../components/ui/table";
+} from "../ui/table";
 import { FaRegTrashAlt } from "react-icons/fa";
-import Button from "../components/ui/button/Button";
+import Button from "../ui/button/Button";
 import { useMediaQuery } from "react-responsive";
 import { BiUser } from "react-icons/bi";
 import { BsFillPersonPlusFill } from "react-icons/bs";
 
-export default function EditGroupModalForm() {
+export default function NewGroupModalForm() {
   const isMobile = useMediaQuery({ maxWidth: 640 }); // sm breakpoint
 
   type User = { name: string; email: string; position: string };

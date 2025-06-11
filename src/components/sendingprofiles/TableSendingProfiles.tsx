@@ -14,22 +14,16 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../components/ui/table";
+} from "../ui/table";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { FaRegTrashAlt } from "react-icons/fa";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { FaCircleInfo } from "react-icons/fa6";
-import Button from "../components/ui/button/Button";
+import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
-import { useSidebar } from "../context/SidebarContext";
-import ShowGroupDetailModal from './ShowGroupDetailModal';
-import EditGroupModal from './EditGroupModal';
-import DeleteGroupModal from './DeleteGroupModal';
+import { useSidebar } from "../../context/SidebarContext";
 
-export default function TableUsersGroups() {
-  // const [modalOpen, setModalOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
-
+export default function TableSendingProfiles() {
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
   const [pagination, setPagination] = useState({
@@ -39,10 +33,6 @@ export default function TableUsersGroups() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const onShowDetail = () => setActiveModal('detail');
-  const onEditGroup = () => setActiveModal('edit');
-  const onDeleteGroup = () => setActiveModal('delete'); 
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -59,34 +49,37 @@ export default function TableUsersGroups() {
     };
   }, []);
 
-  interface UserGroups {
+  interface SendingProfiles {
     id: number;
-    groupName: string;
-    groupMembers: number;
-    domainVerificationStatus: string;
+    name: string;
+    senderAddress: string;
+    subject: string;
+    body: string;
     lastModified: string;
   }
 
-  const tableData: UserGroups[] = [
+  const tableData: SendingProfiles[] = [
     {
       id: 1,
-      groupName: 'Marketing Team',
-      groupMembers: 5,
-      domainVerificationStatus: 'i-3.co.id',
-      lastModified: '04/06/2025',
+      name: "Google Meet",
+      senderAddress: "",
+      subject: "Google Meet Invitation",
+      body:"",
+      lastModified: "01 March 2025",
     },
     {
       id: 2,
-      groupName: 'Finance Team',
-      groupMembers: 10,
-      domainVerificationStatus: 'i-3.co.id',
-      lastModified: '04/06/2025',
-    },    
+      name: "Zoom",
+      senderAddress: "",
+      subject: "Zoom Invitation",
+      body:"",
+      lastModified: "01 March 2025",
+    },
   ];
 
   const data = useMemo(() => tableData, []);
 
-  const columns = useMemo<ColumnDef<UserGroups>[]>(
+  const columns = useMemo<ColumnDef<SendingProfiles>[]>(
     () => [
       {
         accessorKey: 'id',
@@ -94,16 +87,12 @@ export default function TableUsersGroups() {
         cell: info => info.row.index + 1,
       },
       {
-        accessorKey: 'groupName',
-        header: 'Group Name',
+        accessorKey: 'name',
+        header: 'Name',
       },
       {
-        accessorKey: 'groupMembers',
-        header: 'Group Members',
-      },
-      {
-        accessorKey: 'domainVerificationStatus',
-        header: 'Domain Verification Status',
+        accessorKey: 'subject',
+        header: 'Subject',
       },
       {
         accessorKey: 'lastModified',
@@ -115,17 +104,17 @@ export default function TableUsersGroups() {
         header: 'Action',
         cell: () => (
           <div className="flex items-center space-x-2">
-            <Button size="xs" variant="info" onClick={onShowDetail}>
+            <Button size="xs" variant="info">
               <FaCircleInfo />
             </Button>
-            <Button size="xs" variant="warning" onClick={onEditGroup}>
+            <Button size="xs" variant="warning">
               <BiSolidEditAlt />
             </Button>
-            <Button size="xs" variant="danger" onClick={onDeleteGroup}>
+            <Button size="xs" variant="danger">
               <FaRegTrashAlt />
             </Button>
           </div>
-        )
+        ),
       },
     ],
     []
@@ -149,7 +138,7 @@ export default function TableUsersGroups() {
   });
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
+    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] dark:border-gray-800 dark:border-1 border-gray-200 border-1">
       <div className="p-4 rounded-lg bg-white dark:bg-white/[0.03]">
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -352,24 +341,6 @@ export default function TableUsersGroups() {
           </div>
         </div>
       </div>
-
-      {/* SHOW MODAL */}
-      <ShowGroupDetailModal 
-        isOpen={activeModal === 'detail'}
-        onClose={() => setActiveModal(null)}
-      />
-
-      {/* EDIT MODAL */}
-      <EditGroupModal 
-        isOpen={activeModal === 'edit'}
-        onClose={() => setActiveModal(null)}
-      />
-
-      {/* DELETE MODAL */}
-      <DeleteGroupModal 
-        isOpen={activeModal === 'delete'}
-        onClose={() => setActiveModal(null)}
-      />      
     </div>
   );
 }

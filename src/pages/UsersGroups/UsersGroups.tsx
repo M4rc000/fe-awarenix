@@ -1,10 +1,10 @@
 import { useState } from "react";
-import CardHeader from "../../usersgroups/CardHeader";
+import CardHeader from "../../components/usersgroups/CardHeader";
 import Breadcrump from "../../components/utils/Breacrump";
 import {GroupIcon} from "../../icons";
 import Button from "../../components/ui/button/Button";
-import NewGroupModal from "../../usersgroups/NewGroupModal";
-import TableUsersGroups from "../../usersgroups/TableUsersGroups";
+import NewGroupModal from "../../components/usersgroups/NewGroupModal";
+import TableUsersGroups from "../../components/usersgroups/TableUsersGroups";
 
 export default function UsersGroups() {
   const [modalOpen, setModalOpen] = useState(false);
