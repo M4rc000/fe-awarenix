@@ -35,6 +35,7 @@ interface ButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+  type?:      "button" | "submit" | "reset";
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -46,10 +47,11 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   className = "",
   disabled = false,
+  type      = "button",
 }) => {
   return (
     <button
-      type="button"
+      type={type}              
       className={[
         "inline-flex items-center justify-center gap-2 rounded-lg transition",
         sizeClasses[size],

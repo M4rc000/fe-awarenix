@@ -26,7 +26,7 @@ import ShowGroupDetailModal from './ShowGroupDetailModal';
 import EditGroupModal from './EditGroupModal';
 import DeleteGroupModal from './DeleteGroupModal';
 
-export default function TableUsersGroups() {
+export default function TableGroups() {
   // const [modalOpen, setModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
 
@@ -149,7 +149,7 @@ export default function TableUsersGroups() {
   });
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
+    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] border border-1-gray-500 dark:border-gray-700">
       <div className="p-4 rounded-lg bg-white dark:bg-white/[0.03]">
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -171,7 +171,7 @@ export default function TableUsersGroups() {
               </div>
             </div>
             {/* SEARCH BAR */}
-            <div className={`relative ${isExpanded ? 'xl:mx-40' : 'xl:mx-74'}`}>
+            <div className={`relative ${isExpanded ? 'xl:mx-24' : 'xl:mx-30'}`}>
               <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                 <svg
                   className="fill-gray-500 dark:fill-gray-400"
