@@ -6,8 +6,7 @@ import {
   getFilteredRowModel,
   flexRender,
   ColumnDef,
-  getSortedRowModel,
-  CellContext
+  getSortedRowModel
 } from '@tanstack/react-table';
 import {
   Table,
@@ -23,23 +22,8 @@ import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
-import ShowUserDetailModal from './ShowUserDetailModal';
-import EditUserModal from './EditUserModal';
-import DeleteUserModal from './DeleteUserModal';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  position: string;
-  updated_at: string;
-}
-
-
-export default function TableUsers() {
-  // const [modalOpen, setModalOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
-
+export default function TableLandingPages() {
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
   const [pagination, setPagination] = useState({
@@ -49,10 +33,7 @@ export default function TableUsers() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [data, setData] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
+  
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -68,51 +49,31 @@ export default function TableUsers() {
     };
   }, []);
 
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('http://localhost:3000/api/v1/users/all', {
-          credentials: 'include', // agar cookie/token ikut dikirim jika diperlukan
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (!res.ok) throw new Error('Failed to fetch data');
-
-        const result = await res.json();
-        // setData(result.Data);
-        setData(result.Data || result.data || result);
-        console.log(result)
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, []);
-  
-  const onShowDetail = (user: User) => {
-    setSelectedUser(user);
-    setActiveModal('detail');
-  };
-
-  const onEditUser = (user: User) => {
-    setSelectedUser(user);
-    setActiveModal('edit');
+  interface LandingPages {
+    id: number;
+    name: string;
+    body: string;
+    lastModified: string;
   }
-  
-  const onDeleteUser = (user: User) => {
-    setSelectedUser(user);
-    setActiveModal('delete'); 
-  } 
 
-  
-  const columns = useMemo<ColumnDef<User>[]>(
+  const tableData: LandingPages[] = [
+    {
+      id: 1,
+      name: "Google Meet",
+      body: "",
+      lastModified: "01 March 2025",
+    },
+    {
+      id: 2,
+      name: "Zoom",
+      body: "",
+      lastModified: "01 March 2025",
+    },
+  ];
+
+  const data = useMemo(() => tableData, []);
+
+  const columns = useMemo<ColumnDef<LandingPages>[]>(
     () => [
       {
         accessorKey: 'id',
@@ -124,51 +85,30 @@ export default function TableUsers() {
         header: 'Name',
       },
       {
-        accessorKey: 'email',
-        header: 'Email',
+        accessorKey: 'body',
+        header: 'Body',
       },
       {
-        accessorKey: 'position',
-        header: 'Position',
-      },
-      {
-        accessorKey: 'updatedAt',
+        accessorKey: 'lastModified',
         header: 'Last Modified',
-        cell: ({ getValue }) => {
-          const raw = getValue();
-          if (!raw) return '-';
-
-          const date = new Date(raw);
-          if (isNaN(date.getTime())) return '-';
-          
-          return date.toLocaleString('id-ID', {
-            timeZone: 'Asia/Jakarta',
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-          }).replace(' pukul ', ' ');
-        }
       },
       {
         id: 'actions',
         accessorKey: 'actions',
         header: 'Action',
-        cell: (row: CellContext<User, unknown>) => (          
-          <div className="flex items-center space-x-2">
-            <Button size="xs" variant="info" onClick={() => onShowDetail(row.row.original)}>
+        cell: () => (
+          <div className="flex items-center justify-center space-x-2">
+            <Button size="xs" variant="info">
               <FaCircleInfo />
             </Button>
-            <Button size="xs" variant="warning" onClick={() => onEditUser(row.row.original)}>
+            <Button size="xs" variant="warning">
               <BiSolidEditAlt />
             </Button>
-            <Button size="xs" variant="danger" onClick={() => onDeleteUser(row.row.original)}>
+            <Button size="xs" variant="danger">
               <FaRegTrashAlt />
             </Button>
           </div>
-        )
+        ),
       },
     ],
     []
@@ -192,7 +132,7 @@ export default function TableUsers() {
   });
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] border border-1-gray-500 dark:border-gray-700">
+    <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] dark:border-gray-800 dark:border-1 border-gray-200 border-1">
       <div className="p-4 rounded-lg bg-white dark:bg-white/[0.03]">
         <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -214,7 +154,7 @@ export default function TableUsers() {
               </div>
             </div>
             {/* SEARCH BAR */}
-            <div className={`relative ${isExpanded ? 'xl:mx-24' : 'xl:mx-30'}`}>
+            <div className={`relative ${isExpanded ? 'xl:mx-40' : 'xl:mx-74'}`}>
               <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                 <svg
                   className="fill-gray-500 dark:fill-gray-400"
@@ -274,7 +214,7 @@ export default function TableUsers() {
                         {flexRender(header.column.columnDef.header, header.getContext())}
 
                         {canSort && (
-                          <div className="mt-1 w-1 text-xs">
+                          <div className="mt-1 w-1 text-xs px-12">
                             <span
                               className={`
                                 ${isSorted === "asc"
@@ -395,36 +335,6 @@ export default function TableUsers() {
           </div>
         </div>
       </div>
-
-      {/* SHOW MODAL */}
-      <ShowUserDetailModal 
-        isOpen={activeModal === 'detail'}
-        onClose={() => {
-          setActiveModal(null);
-          setSelectedUser(null);
-        }}
-        user={selectedUser}
-        />
-
-      {/* EDIT MODAL */}
-      <EditUserModal 
-        isOpen={activeModal === 'edit'}
-        onClose={() => {
-          setActiveModal(null);
-          setSelectedUser(null);
-        }}
-        user={selectedUser}
-      />
-
-      {/* DELETE MODAL */}
-      <DeleteUserModal 
-        isOpen={activeModal === 'delete'}
-        onClose={() => {
-          setActiveModal(null);
-          setSelectedUser(null);
-        }}
-        user={selectedUser}
-      />      
     </div>
   );
 }

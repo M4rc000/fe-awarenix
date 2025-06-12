@@ -5,6 +5,7 @@ import Label from "../form/Label";
 // Define the ref methods that parent can call
 export type NewUserModalFormRef = {
   submitUsers: () => Promise<boolean>;
+  user: User | null;
 };
 
 // Define user data structure
@@ -64,19 +65,17 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef>((_, ref) => {
     }
 
     setIsSubmitting(true);
-    console.log('Submitting user data:', user);
     
     try {
-      const response = await fetch('http://localhost:3000/api/v1/register', {
+      const response = await fetch('http://localhost:3000/api/v1/users/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-        },
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         body: JSON.stringify(user),
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
 
       if (!response.ok) {
         let errorMessage = 'Failed to create user';

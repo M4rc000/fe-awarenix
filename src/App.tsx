@@ -12,6 +12,8 @@ import UsersGroups from "./pages/UsersGroups/UsersGroups";
 import EmailTemplates from "./pages/EmailTemplates/EmailTemplates";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import SendingProfiles from "./pages/SendingProfiles/SendingProfiles"
+import LandingPages from "./pages/LandingPages/LandingPages";
+import PhishingEmail from "./pages/PhisingEmail/PhisingEmail";
 
 export default function App() {
   return (
@@ -25,11 +27,16 @@ export default function App() {
           {/* Dashboard Layout */}
           <Route element={<ProtectedRoute/>}>
             <Route element={<AppLayout />}>
+              {/* ADMIN */}
               <Route index path="/dashboard" element={<Dashboard />} />
               <Route path="/campaigns" element={<Campaigns />} />
               <Route path="/users-groups" element={<UsersGroups/>} />
               <Route path="/email-templates" element={<EmailTemplates />} />
               <Route path="/sending-profiles" element={<SendingProfiles />} />
+              <Route path="/landing-pages" element={<LandingPages />} />
+
+              {/* PHISING & SIMULATION */}
+              <Route path="/phising-emails" element={<PhishingEmail />} />
             </Route>
           </Route>
 

@@ -22,6 +22,10 @@ import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
+import ShowSendingProfilesModal from './ShowSendingProfilesModal';
+import UpdateSendingProfilesModal from './UpdateSendingProfilesModal';
+import DeleteSendingProfilesModal from './DeleteSendingProfilesModal'
+
 
 export default function TableSendingProfiles() {
   const [search, setSearch] = useState('');
@@ -33,7 +37,23 @@ export default function TableSendingProfiles() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
+  const [showSendingProfilesModalOpen, setShowSendingProfilesModalOpen] = useState(false);
+  const [updateSendingProfilesModalOpen, setUpdateSendingProfilesModalOpen] = useState(false);
+  const [deleteSendingProfilesModalOpen, setDeleteSendingProfilesModalOpen] = useState(false);
   
+  const onShowSendingProfiles = () => {
+    setActiveModal('detail');
+  };
+
+  const onUpdateSendingProfiles = () => {
+    setActiveModal('edit');
+  }
+
+  const onDeleteSendingProfiles = () => {
+    setActiveModal('delete');
+  }
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -103,14 +123,14 @@ export default function TableSendingProfiles() {
         accessorKey: 'actions',
         header: 'Action',
         cell: () => (
-          <div className="flex items-center space-x-2">
-            <Button size="xs" variant="info">
+          <div className="flex items-center justify-center space-x-2">
+            <Button size="xs" variant="info" onClick={onShowSendingProfiles}>
               <FaCircleInfo />
             </Button>
-            <Button size="xs" variant="warning">
+            <Button size="xs" variant="warning" onClick={onUpdateSendingProfiles}>
               <BiSolidEditAlt />
             </Button>
-            <Button size="xs" variant="danger">
+            <Button size="xs" variant="danger" onClick={onDeleteSendingProfiles}>
               <FaRegTrashAlt />
             </Button>
           </div>
@@ -341,6 +361,23 @@ export default function TableSendingProfiles() {
           </div>
         </div>
       </div>
+
+
+      {/* MODALS */}
+      <ShowSendingProfilesModal
+        isOpen={activeModal === 'detail'}
+        onClose={() => setActiveModal(null)}
+      />
+
+      <UpdateSendingProfilesModal
+        isOpen={activeModal === 'edit'}
+        onClose={() => setActiveModal(null)}
+      />
+
+      <DeleteSendingProfilesModal
+        isOpen={activeModal === 'delete'}
+        onClose={() => setActiveModal(null)}
+      />
     </div>
   );
 }

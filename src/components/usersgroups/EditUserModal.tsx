@@ -5,40 +5,21 @@ import {
   DialogTitle,
   Transition,
 } from '@headlessui/react'
-import { Fragment, useRef, useState } from 'react'
-import ShowUserDetailModalForm, { ShowUserModalFormRef } from './ShowUserDetailModalForm'
+import { Fragment, useRef } from 'react'
+import EditUserModalForm, {EditUserModalFormRef} from './EditUserModalForm'
 
-export type ShowUserModalProps = {
+export type EditUserModalProps = {
   isOpen: boolean
   onClose: () => void
   user: User | null;
 }
 
-export default function ShowUserModal({
+export default function EditUserModal({
   isOpen,
   onClose,
   user,
-}: ShowUserModalProps) {
-  const formRef = useRef<ShowUserModalFormRef>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSave = async () => {
-    if (!formRef.current) return;
-    
-    try {
-      setIsSubmitting(true);
-      const success = await formRef.current.submitUsers();
-      
-      if (success) {
-        onClose(); // Only close if submission was successful
-      }
-    } catch (error) {
-      console.error('Failed to save user:', error);
-      // Handle error (show toast, etc.)
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+}: EditUserModalProps) {
+  const formRef = useRef<EditUserModalFormRef>(null);
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -78,11 +59,10 @@ export default function ShowUserModal({
               {/* HEADER */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Detail User
+                  Edit User
                 </DialogTitle>
                 <button
                   onClick={onClose}
-                  disabled={isSubmitting}
                   aria-label="Close modal"
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -92,14 +72,13 @@ export default function ShowUserModal({
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <ShowUserDetailModalForm ref={formRef} user={user!}/>
+                <EditUserModalForm ref={formRef} user={user!}/>
               </div>
 
               {/* FOOTER */}
               <div className="flex justify-end gap-2 px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                 <button
                   onClick={onClose}
-                  disabled={isSubmitting}
                   className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Close

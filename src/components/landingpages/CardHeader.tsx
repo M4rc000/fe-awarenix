@@ -2,7 +2,7 @@ import {
   ArrowUpIcon,
 } from "../../icons";
 import Badge from "../ui/badge/Badge";
-import { TfiEmail } from "react-icons/tfi";
+import { RiPagesLine } from "react-icons/ri";
 
 export default function CardHeader() {
   return (
@@ -13,10 +13,10 @@ export default function CardHeader() {
           {/* Header: icon + title */}
           <div className="flex items-center space-x-3">
             <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
-              <TfiEmail className="text-gray-800 text-xl dark:text-white/90" />
+              <RiPagesLine className="text-gray-800 text-xl dark:text-white/90" />
             </div>
             <span className="xl:text-lg text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Sending Profile
+              Total Landing Page
             </span>
             {/* Main stat */}
             <h4 className="text-xl font-bold text-gray-800 dark:text-white/90">

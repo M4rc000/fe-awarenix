@@ -2,7 +2,7 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 
 // Define the ref methods that parent can call
-export type ShowUserModalFormRef = {
+export type EditUserModalFormRef = {
   submitUsers: () => Promise<boolean>;
 };
 
@@ -12,11 +12,11 @@ type UserData = {
   position: string;
 };
 
-type ShowUserDetailModalFormProps = {
+type EditUserModalFormProps = {
   user: UserData;
 };
 
-const ShowUserDetailModalForm = ({ user }: ShowUserDetailModalFormProps) => {
+const EditUserModalForm = ({ user }: EditUserModalFormProps) => {
   if (!user) return null;
   return (
     <div className="space-y-4">
@@ -54,6 +54,6 @@ const ShowUserDetailModalForm = ({ user }: ShowUserDetailModalFormProps) => {
     </div>
 )};
 
-ShowUserDetailModalForm.displayName = 'ShowUserDetailModalForm';
+EditUserModalForm.displayName = 'EditUserModalForm';
 
-export default ShowUserDetailModalForm;
+export default EditUserModalForm;
