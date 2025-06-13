@@ -5,6 +5,7 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
+import Swal from 'sweetalert2';
 
 type LoginErrors = {
   email?: string;
@@ -62,7 +63,15 @@ export default function SignInForm() {
       // optional: save user info
       localStorage.setItem("user", JSON.stringify(body.user));
 
-      // navigate to dashboard
+      Swal.fire({
+          title: 'Success',
+          text: 'Login successfully',
+          icon: 'success',
+          timer: 2000,
+          width: 300,
+          height: 250,
+      });
+
       navigate("/dashboard");
     } catch (err: any) {
       console.error(err);
