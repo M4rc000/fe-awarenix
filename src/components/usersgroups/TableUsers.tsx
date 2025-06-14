@@ -35,6 +35,10 @@ interface User {
   updated_at: string;
 }
 
+type Props = {
+  data: User[];
+  setData: React.Dispatch<React.SetStateAction<User[]>>;
+};
 
 export default function TableUsers() {
   // const [modalOpen, setModalOpen] = useState(false);
@@ -49,8 +53,8 @@ export default function TableUsers() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -70,22 +74,22 @@ export default function TableUsers() {
 
 
   useEffect(() => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("token");
     const fetchData = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/v1/users/all', {
-          credentials: 'include', // agar cookie/token ikut dikirim jika diperlukan
+        const res = await fetch(`${API_URL}/users/all`, {
+          credentials: 'include',
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
         if (!res.ok) throw new Error('Failed to fetch data');
 
         const result = await res.json();
-        // setData(result.Data);
         setData(result.Data || result.data || result);
-        console.log(result)
       } catch (err) {
         console.error(err);
       } finally {
@@ -110,7 +114,6 @@ export default function TableUsers() {
     setSelectedUser(user);
     setActiveModal('delete'); 
   } 
-
   
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
@@ -190,7 +193,6 @@ export default function TableUsers() {
     getSortedRowModel: getSortedRowModel(),
     onPaginationChange: setPagination, 
   });
-
   return (
     <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] border border-1-gray-500 dark:border-gray-700">
       <div className="p-4 rounded-lg bg-white dark:bg-white/[0.03]">

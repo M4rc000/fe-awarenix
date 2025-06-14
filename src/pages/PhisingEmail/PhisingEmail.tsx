@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Search, ChevronDown, Lock, QrCode, FileText } from 'lucide-react';
+import { MailIcon } from '../../icons';
+import Breadcrump from '../../components/utils/Breacrump';
 
 const PhishingEmail = () => {
   const [selectedCards, setSelectedCards] = useState({});
@@ -64,10 +66,10 @@ const PhishingEmail = () => {
     const isSelected = selectedCards[card.id];
     
     return (
-      <div key={card.id} className="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div key={card.id} className="bg-white dark:bg-gray-900 dark:border-gray-600 rounded-lg shadow-md overflow-hidden border border-gray-200">
         {/* Header */}
-        <div className="flex justify-between items-center p-4 bg-gray-50 border-b">
-          <h3 className="font-medium text-gray-900">{card.title}</h3>
+        <div className="flex justify-between items-center p-4 bg-gray-50 border-b dark:bg-gray-900">
+          <h3 className="font-medium dark:text-gray-300">{card.title}</h3>
           <span className="text-sm text-gray-600">{card.type}</span>
         </div>
 
@@ -200,26 +202,21 @@ const PhishingEmail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Phishing Email Library</h1>
-          <div className="text-blue-600 hover:text-blue-800 cursor-pointer">
-            See our phishing emails <span className="underline">support article</span>.
-          </div>
-        </div>
+        <Breadcrump icon={<MailIcon/>} title="Phising Email" />
 
         {/* Controls */}
         <div className="flex gap-4 mb-6 flex-wrap">
           {/* Filter */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Filter</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-400">Filter</label>
             <div className="relative">
               <select 
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="appearance-none bg-white border dark:bg-gray-900 dark:border-gray-500 dark:text-gray-400 border-gray-300 rounded px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option>Easy OR Moderate</option>
                 <option>Easy</option>
@@ -232,12 +229,12 @@ const PhishingEmail = () => {
 
           {/* Sort */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Sort</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-500">Sort</label>
             <div className="relative">
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="appearance-none bg-white border border-gray-300 dark:bg-gray-900 dark:text-gray-400  dark:border-gray-500 rounded px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option>Popularity (Most to Least)</option>
                 <option>Popularity (Least to Most)</option>
@@ -258,7 +255,7 @@ const PhishingEmail = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Type the name of a phish"
-                className="pl-8 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                className="pl-8 pr-4 py-2 border dark:text-gray-300 border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
               />
               <Search size={16} className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
@@ -266,7 +263,7 @@ const PhishingEmail = () => {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 ">
           {phishingCards
             .filter(card => 
               searchTerm === '' || 

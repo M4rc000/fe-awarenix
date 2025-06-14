@@ -1,12 +1,19 @@
 import { forwardRef, useState, useImperativeHandle } from "react";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import Swal from "sweetalert2";
+
 
 // Define the ref methods that parent can call
 export type NewUserModalFormRef = {
-  submitUsers: () => Promise<boolean>;
+  submitUsers: () => Promise<User | null>;
   user: User | null;
 };
+
+type NewUserModalFormProps = {
+  onSuccess?: () => void;
+};
+
 
 // Define user data structure
 type UserData = {
@@ -16,7 +23,7 @@ type UserData = {
   password: string;
 };
 
-const NewUserModalForm = forwardRef<NewUserModalFormRef>((_, ref) => {
+const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(({ onSuccess }, ref) => {
   const [user, setUser] = useState<UserData>({
     name: "",
     email: "",
@@ -57,21 +64,22 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef>((_, ref) => {
 
   // Submit function dengan better error handling
   const submitUsers = async (): Promise<boolean> => {
-    console.log('submitUsers called');
     
     if (!validateForm()) {
-      console.log('Validation failed');
+      // console.log('Validation failed');
       return false;
     }
 
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('http://localhost:3000/api/v1/users/register', {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/users/register`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         body: JSON.stringify(user),
       });
@@ -99,9 +107,14 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef>((_, ref) => {
         throw new Error(errorMessage);
       }
 
-      // Parse success response
-      const result = await response.json();
-      console.log('User created successfully:', result);
+      Swal.fire({
+        title: "Success",
+        text: "User successfully added!",
+        width: 300,
+        icon: "success"
+      });
+      
+      if (onSuccess) onSuccess(); 
 
       // Reset form on success
       setUser({

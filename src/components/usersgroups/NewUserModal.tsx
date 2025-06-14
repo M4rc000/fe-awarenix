@@ -11,11 +11,13 @@ import NewUserModalForm, { NewUserModalFormRef } from './NewUserModalForm'
 export type NewUserModalProps = {
   isOpen: boolean
   onClose: () => void
+  onUserAdded: () => void
 }
 
 export default function NewUserModal({
   isOpen,
   onClose,
+  onUserAdded,
 }: NewUserModalProps) {
   const formRef = useRef<NewUserModalFormRef>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +30,8 @@ export default function NewUserModal({
       const success = await formRef.current.submitUsers();
       
       if (success) {
-        onClose(); // Only close if submission was successful
+        onUserAdded(); // ⬅️ panggil reload
+        onClose();
       }
     } catch (error) {
       console.error('Failed to save user:', error);
@@ -90,7 +93,7 @@ export default function NewUserModal({
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <NewUserModalForm ref={formRef} />
+                <NewUserModalForm ref={formRef} onSuccess={onUserAdded} />
               </div>
 
               {/* FOOTER */}
