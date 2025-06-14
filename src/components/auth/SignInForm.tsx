@@ -5,7 +5,7 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
-import Swal from 'sweetalert2';
+import ModernAlert from "../ui/alert/ModernAlert";
 
 type LoginErrors = {
   email?: string;
@@ -21,9 +21,11 @@ export default function SignInForm() {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [alert, setAlert] = useState(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAlert(null);
     setErrors({});
     if (!email) return setErrors({ email: "Email is required" });
     if (!password) return setErrors({ password: "Password is required" });
@@ -58,21 +60,17 @@ export default function SignInForm() {
       }
 
       const body = await res.json();
-      // save token
+      // SAVE DATA LOGIN (SESSION)
       localStorage.setItem("token", body.token);
-      // optional: save user info
+      localStorage.setItem("token_expired", body.expires_at);
       localStorage.setItem("user", JSON.stringify(body.user));
 
-      Swal.fire({
-          title: 'Success',
-          text: 'Login successfully',
-          icon: 'success',
-          timer: 2000,
-          width: 300,
-          height: 250,
-      });
+      setAlert({ type: "success", message: "Login successfully!" });
 
-      navigate("/dashboard");
+      // Navigate setelah alert selesai
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 3000);
     } catch (err: any) {
       console.error(err);
       setErrors({ general: err.message || "Login gagal" });
@@ -83,85 +81,101 @@ export default function SignInForm() {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
-        <h1 className="mb-5 font-semibold text-gray-800 dark:text-white text-3xl">
-          Sign In
-        </h1>
-        {errors.general && (
-          <p className="mb-4 text-center text-red-500">{errors.general}</p>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
-          <div>
-            <Label>
-              Email <span className="text-error-500">*</span>
-            </Label>
-            <Input
-              placeholder="info@gmail.com"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div>
-            <Label>
-              Password <span className="text-error-500">*</span>
-            </Label>
-            <div className="relative mt-1">
+      {alert && (
+        <ModernAlert 
+          type={alert.type} 
+          duration={3000}
+          onDismiss={() => setAlert(null)}
+        >
+          {alert.message}
+        </ModernAlert>
+      )}
+      <div className="flex flex-col flex-1 w-full max-w-md mx-auto justify-start lg:justify-center py-18">
+        <div className="mb-5 sm:mb-8">
+          <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+            Sign In
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Enter your email and password to sign in!
+          </p>
+        </div>
+        <div className="mt-10">
+          {errors.general && (
+            <p className="mb-4 text-center text-red-500">{errors.general}</p>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email */}
+            <div>
+              <Label>
+                Email <span className="text-error-500">*</span>
+              </Label>
               <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="info@gmail.com"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1"
               />
-              <span
-                onClick={() => setShowPassword((s) => !s)}
-                className="absolute z-30 right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <Label>
+                Password <span className="text-error-500">*</span>
+              </Label>
+              <div className="relative mt-1">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <span
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute z-30 right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeIcon className="size-5 fill-gray-500" />
+                  ) : (
+                    <EyeCloseIcon className="size-5 fill-gray-500" />
+                  )}
+                </span>
+              </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+              )}
+            </div>
+
+            {/* Keep me logged in & Forgot */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Checkbox checked={isChecked} onChange={setIsChecked} />
+                <span className="text-theme-sm text-gray-700 dark:text-gray-400">
+                  Keep me logged in
+                </span>
+              </div>
+              <Link
+                to="/reset-password"
+                className="text-sm text-brand-500 hover:text-brand-600"
               >
-                {showPassword ? (
-                  <EyeIcon className="size-5 fill-gray-500" />
-                ) : (
-                  <EyeCloseIcon className="size-5 fill-gray-500" />
-                )}
-              </span>
+                Forgot password?
+              </Link>
             </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-            )}
-          </div>
 
-          {/* Keep me logged in & Forgot */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Checkbox checked={isChecked} onChange={setIsChecked} />
-              <span className="text-theme-sm text-gray-700 dark:text-gray-400">
-                Keep me logged in
-              </span>
-            </div>
-            <Link
-              to="/reset-password"
-              className="text-sm text-brand-500 hover:text-brand-600"
+            {/* Submit */}
+            <Button
+              type="submit"
+              className="w-full"
+              size="sm"
+              disabled={loading}
             >
-              Forgot password?
-            </Link>
-          </div>
-
-          {/* Submit */}
-          <Button
-            type="submit"
-            className="w-full"
-            size="sm"
-            disabled={loading}
-          >
-            {loading ? "Signing in..." : "Sign in"}
-          </Button>
-        </form>
+              {loading ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );
