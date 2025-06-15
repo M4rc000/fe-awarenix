@@ -6,7 +6,6 @@ const ModernAlert = ({
   type = 'info', 
   children, 
   onDismiss,
-  dismissible = true,
   duration = null,
   className = '' 
 }) => {
@@ -110,7 +109,7 @@ const ModernAlert = ({
       
       
       {/* CSS Animation */}
-      <style jsx>{`
+      <style>{`
         @keyframes shrinkBorder {
           from {
             width: 100%;

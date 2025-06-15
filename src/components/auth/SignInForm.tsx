@@ -21,11 +21,9 @@ export default function SignInForm() {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [alert, setAlert] = useState(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setAlert(null);
     setErrors({});
     if (!email) return setErrors({ email: "Email is required" });
     if (!password) return setErrors({ password: "Password is required" });
@@ -65,12 +63,7 @@ export default function SignInForm() {
       localStorage.setItem("token_expired", body.expires_at);
       localStorage.setItem("user", JSON.stringify(body.user));
 
-      setAlert({ type: "success", message: "Login successfully!" });
-
-      // Navigate setelah alert selesai
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 3000);
+      navigate('/dashboard');
     } catch (err: any) {
       console.error(err);
       setErrors({ general: err.message || "Login gagal" });
@@ -81,15 +74,6 @@ export default function SignInForm() {
 
   return (
     <div className="flex flex-col flex-1">
-      {alert && (
-        <ModernAlert 
-          type={alert.type} 
-          duration={3000}
-          onDismiss={() => setAlert(null)}
-        >
-          {alert.message}
-        </ModernAlert>
-      )}
       <div className="flex flex-col flex-1 w-full max-w-md mx-auto justify-start lg:justify-center py-18">
         <div className="mb-5 sm:mb-8">
           <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">

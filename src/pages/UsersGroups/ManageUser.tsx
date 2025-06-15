@@ -9,12 +9,18 @@ export default function ManageUser() {
 
     const fetchData = () => {
         // Ubah state agar TableUsers ter-trigger re-fetch
-        setReloadTrigger(prev => prev + 1);
+        setReloadTrigger(prev => {
+            const newValue = prev + 1;
+            return newValue;
+        });
     }
+
     return (
         <div className="">
             <Button className="text-md mt-2 mb-3" onClick={()=> setModalOpen(true)}>New User</Button>
-            <TableUsers/>
+            <TableUsers 
+                reloadTrigger={reloadTrigger} // Pass trigger untuk re-fetch
+            />
             <NewUserModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}

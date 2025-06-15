@@ -5,30 +5,42 @@ import {
   DialogTitle,
   Transition,
 } from '@headlessui/react'
-import { Fragment, useRef } from 'react'
+import { Fragment, useRef, useState} from 'react'
 import EditUserModalForm, {EditUserModalFormRef} from './EditUserModalForm'
+import Swal from 'sweetalert2';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  position: string;
+  updated_at: string;
+}
 
 export type EditUserModalProps = {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   user: User | null;
+  onUserUpdated?: () => void; // Tambahkan callback untuk refresh data
+  onDismiss?: () => void;
 }
 
 export default function EditUserModal({
   isOpen,
   onClose,
   user,
+  onUserUpdated, // Tambahkan parameter ini
 }: EditUserModalProps) {
   const formRef = useRef<EditUserModalFormRef>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog 
         open={isOpen} 
-        onClose={onClose} // Allow closing via backdrop/escape key
+        onClose={onClose}
         className="relative z-[999]"
       >
-        {/* Backdrop with fade animation */}
         <Transition.Child
           as={Fragment}
           enter="transition-opacity duration-300"
@@ -42,7 +54,6 @@ export default function EditUserModal({
         </Transition.Child>
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          {/* Panel with scale & slide-up animation */}
           <Transition.Child
             as={Fragment}
             enter="transition-transform duration-300 ease-out"
@@ -82,6 +93,50 @@ export default function EditUserModal({
                   className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Close
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      setIsLoading(true);
+                      
+                      const success = await formRef.current?.submitUsers();
+                      
+                      if (success) {
+                        onClose();
+                        Swal.fire({
+                          title: 'Success',
+                          text: 'User updated successfully',
+                          icon: "success",
+                          timer: 2000
+                        })
+                        
+                        // Panggil callback untuk refresh data
+                        if (onUserUpdated) {
+                          onUserUpdated();
+                        }
+                      } else {
+                        Swal.fire({
+                          title: 'Error',
+                          text: 'Failed to update user. Please try again!',
+                          icon: "error",
+                          timer: 2000
+                        })
+                      }
+                    } catch (error) {
+                      Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while updating user!',
+                        icon: "error",
+                        timer: 2000
+                      })
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-300 dark:bg-blue-600 dark:hover:bg-blue-500 text-gray-800 dark:text-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </DialogPanel>

@@ -26,6 +26,8 @@ import { useSidebar } from "../../context/SidebarContext";
 import ShowUserDetailModal from './ShowUserDetailModal';
 import EditUserModal from './EditUserModal';
 import DeleteUserModal from './DeleteUserModal';
+import ModernAlert from '../ui/alert/ModernAlert';
+import Swal from 'sweetalert2';
 
 interface User {
   id: number;
@@ -38,9 +40,11 @@ interface User {
 type Props = {
   data: User[];
   setData: React.Dispatch<React.SetStateAction<User[]>>;
+  reloadTrigger?: number;
 };
 
-export default function TableUsers() {
+
+export default function TableUsers({reloadTrigger}: Props) {
   // const [modalOpen, setModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
 
@@ -53,7 +57,6 @@ export default function TableUsers() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(true);
   const [data, setData] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -73,7 +76,6 @@ export default function TableUsers() {
   }, []);
 
 
-  useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL;
     const token = localStorage.getItem("token");
     const fetchData = async () => {
@@ -92,13 +94,26 @@ export default function TableUsers() {
         setData(result.Data || result.data || result);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to load user data',
+          timer: 2000,
+          icon: "error"
+        })
       }
-    };
-    
-    fetchData();
-  }, []);
+    }; 
+
+    useEffect(() => {
+      fetchData();
+    }, []);
+
+    useEffect(() => {
+    if (reloadTrigger && reloadTrigger > 0) {
+      fetchData();
+    }
+  }, [reloadTrigger]);
+
+   // Update useEffect untuk initial load
   
   const onShowDetail = (user: User) => {
     setSelectedUser(user);
@@ -193,6 +208,31 @@ export default function TableUsers() {
     getSortedRowModel: getSortedRowModel(),
     onPaginationChange: setPagination, 
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const API_URL = import.meta.env.VITE_API_URL;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/users/all`, {
+          credentials: 'include',
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error('Failed to fetch data');
+
+        const result = await res.json();
+        setData(result.Data || result.data || result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, [reloadTrigger]);
   return (
     <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] border border-1-gray-500 dark:border-gray-700">
       <div className="p-4 rounded-lg bg-white dark:bg-white/[0.03]">
@@ -416,6 +456,11 @@ export default function TableUsers() {
           setSelectedUser(null);
         }}
         user={selectedUser}
+        onUserUpdated={() => {
+          fetchData()
+        }
+      }
+        
       />
 
       {/* DELETE MODAL */}
@@ -426,7 +471,8 @@ export default function TableUsers() {
           setSelectedUser(null);
         }}
         user={selectedUser}
-      />      
+      />   
+
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardHeader from "../../components/usersgroups/CardHeader";
 import Breadcrump from "../../components/utils/Breacrump";
 import {GroupIcon} from "../../icons";
@@ -7,7 +7,6 @@ import ManageUser from "./ManageUser";
 
 export default function UsersGroups() {
   const [activeTab, setActiveTab] = useState('Groups');
-  
   const tabs = ['Groups', 'Users'];
 
   const renderTabContent = () => {

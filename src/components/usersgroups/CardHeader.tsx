@@ -1,6 +1,7 @@
 import {
   ArrowUpIcon,
 } from "../../icons";
+import { useState, useEffect } from "react";
 import { FaUser } from "react-icons/fa";
 import Badge from "../ui/badge/Badge";
 import { MdGroups } from "react-icons/md";
@@ -8,6 +9,53 @@ import { useSidebar } from "../../context/SidebarContext";
 
 export default function CardHeader() {
   const { isExpanded, isHovered } = useSidebar();
+  const [totalGroups, setTotalGroups] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+  
+  useEffect(() => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const fetchTotalGroups = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_URL}/groups/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.Success && typeof data.Total === "number") {
+          setTotalGroups(data.Total);
+        }
+      } catch (err) {
+        console.error("Failed to fetch total groups:", err);
+      }
+    };
+    
+    fetchTotalGroups();
+  }, []);
+  
+  useEffect(() => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const fetchTotalUsers = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_URL}/users/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.Success && typeof data.Total === "number") {
+          setTotalUsers(data.Total);
+        }
+      } catch (err) {
+        console.error("Failed to fetch total users:", err);
+      }
+    };
+
+    fetchTotalUsers();
+  }, []);
+
   return (
     <>
       <div className="grid xl:grid-cols-3 xl:gap-4 gap-4 sm:grid-cols-2 sm:gap-6">
@@ -23,7 +71,7 @@ export default function CardHeader() {
             </span>
             {/* Main stat */}
             <h4 className="text-lg font-bold text-gray-800 dark:text-white/90">
-              10
+              {totalGroups}
             </h4>
           </div>
 
@@ -47,7 +95,7 @@ export default function CardHeader() {
               Total Users
             </span>
             <h4 className="text-lg font-bold text-gray-800 dark:text-white/90">
-              50
+              {totalUsers}
             </h4>
           </div>
           <div className="mt-2 xl:mr-4 flex justify-end">
