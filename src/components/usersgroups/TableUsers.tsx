@@ -26,8 +26,7 @@ import { useSidebar } from "../../context/SidebarContext";
 import ShowUserDetailModal from './ShowUserDetailModal';
 import EditUserModal from './EditUserModal';
 import DeleteUserModal from './DeleteUserModal';
-import ModernAlert from '../ui/alert/ModernAlert';
-import Swal from 'sweetalert2';
+import Swal from '../utils/AlertContainer';
 
 interface User {
   id: number;
@@ -60,6 +59,7 @@ export default function TableUsers({reloadTrigger}: Props) {
   const [data, setData] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+  // CTRL K 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -75,46 +75,43 @@ export default function TableUsers({reloadTrigger}: Props) {
     };
   }, []);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`${API_URL}/users/all`, {
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const API_URL = import.meta.env.VITE_API_URL;
-    const token = localStorage.getItem("token");
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${API_URL}/users/all`, {
-          credentials: 'include',
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      if (!res.ok) throw new Error('Failed to fetch data');
 
-        if (!res.ok) throw new Error('Failed to fetch data');
-
-        const result = await res.json();
-        setData(result.Data || result.data || result);
-      } catch (err) {
-        console.error(err);
-        Swal.fire({
-          title: 'Error!',
-          text: 'Failed to load user data',
-          timer: 2000,
-          icon: "error"
-        })
-      }
-    }; 
-
-    useEffect(() => {
-      fetchData();
-    }, []);
-
-    useEffect(() => {
-    if (reloadTrigger && reloadTrigger > 0) {
-      fetchData();
+      const result = await res.json();
+      setData(result.Data || result.data || result);
+    } catch (err) {
+      Swal.fire({
+        text: 'Failed to load user data',
+        duration: 2000,
+        icon: "error"
+      });
+      
+      window.location.reload();
     }
+  }; 
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+  if (reloadTrigger && reloadTrigger > 0) {
+    fetchData();
+  }
   }, [reloadTrigger]);
 
-   // Update useEffect untuk initial load
-  
   const onShowDetail = (user: User) => {
     setSelectedUser(user);
     setActiveModal('detail');
@@ -471,8 +468,8 @@ export default function TableUsers({reloadTrigger}: Props) {
           setSelectedUser(null);
         }}
         user={selectedUser}
+        onUserDeleted={() => fetchData()}
       />   
-
     </div>
   );
 }

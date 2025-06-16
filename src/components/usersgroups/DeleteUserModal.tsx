@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   Dialog,
   DialogBackdrop,
@@ -7,7 +7,8 @@ import {
   Transition,
 } from '@headlessui/react'
 import { Fragment } from 'react'
-import DeleteUserModalForm from './DeleteUserModalForm'
+import DeleteUserModalForm, {DeleteUserModalFormRef} from './DeleteUserModalForm'
+import Swal from '../utils/AlertContainer'
 
 export type User = {
   id: number
@@ -21,6 +22,7 @@ export type DeleteUserModalProps = {
   onClose: () => void
   user: User | null
   onSuccess?: () => void
+  onUserDeleted?: () => void
 }
 
 export default function DeleteUserModal({
@@ -28,42 +30,54 @@ export default function DeleteUserModal({
   onClose,
   user,
   onSuccess,
+  onUserDeleted,
 }: DeleteUserModalProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const formRef = useRef<DeleteUserModalFormRef>(null);
+
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem('token');
   const handleDelete = async () => {
-    if (!user) return
-    setIsDeleting(true)
-    setError('')
+    if (!user) return;
+    setIsDeleting(true);
+    setError('');
 
     try {
-      console.log("Token: ", token)
-      const res = await fetch(`http://localhost:3000/api/v1/users/${user.id}`, {
+      const res = await fetch(`${API_URL}/users/${user.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setError(data.error || 'Failed to delete user')
-        return
+        setError(data.error || 'Failed to delete user');
+        Swal.fire({
+          text: 'Failed to delete user',
+          icon: 'error',
+          duration: 2000
+        });
+        return;
       }
+      onUserDeleted?.(); // 🔁 trigger fetch
+      onClose();         // ❎ close modal
 
-      alert("User Successfully deleted");
-      window.location.reload();
-      onSuccess?.();
-      onClose();
     } catch (err) {
-      setError('Unexpected error occurred')
+      setError('Unexpected error occurred');
+      Swal.fire({
+        text: `Unexpected error occurred while deleting user`,
+        icon: 'error',
+        duration: 2000,
+      });
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -104,6 +118,7 @@ export default function DeleteUserModal({
               <div className="px-6 py-4 overflow-y-auto flex-1">
                 <DeleteUserModalForm
                   user={user!}
+                  ref={formRef}
                   onDelete={handleDelete}
                   error={error}
                   isDeleting={isDeleting}
@@ -120,9 +135,42 @@ export default function DeleteUserModal({
                   Cancel
                 </button>
                 <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
                   disabled={isDeleting}
+                  onClick={async () => {
+                    try {
+                      setIsLoading(true);                      
+                      const success = await formRef.current?.submitDelete();
+                      
+                      if (success) {
+                        onClose();
+                        Swal.fire({
+                          text: 'User deleted successfully',
+                          icon: "success",
+                          duration: 2000
+                        });
+                        
+                        // Panggil callback untuk refresh data
+                        if (onUserDeleted) {
+                          onUserDeleted();
+                        }
+                      } else {
+                        Swal.fire({
+                          text: 'Failed to delete user. Please try again!',
+                          icon: "error",
+                          duration: 2000
+                        })
+                      }
+                    } catch (error) {
+                      Swal.fire({
+                        text: `An error occurred while updating user!`,
+                        icon: "error",
+                        duration: 2000
+                      })
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-300 dark:bg-blue-600 dark:hover:bg-blue-500 text-gray-800 dark:text-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isDeleting ? 'Deleting...' : 'Confirm'}
                 </button>

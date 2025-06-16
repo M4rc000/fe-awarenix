@@ -3,8 +3,33 @@ import {
 } from "../../icons";
 import Badge from "../ui/badge/Badge";
 import { RiPagesLine } from "react-icons/ri";
+import { useState, useEffect } from "react";
 
 export default function CardHeader() {
+  const [totalLandingPages, setTotalLandingPages] = useState(0);
+    const [growthDataEmailTemplates, setGrowthDataEmailTemplates] = useState(null);
+    
+    useEffect(() => {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const fetchTotalLandingPages = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const res = await fetch(`${API_URL}/landing-page/all`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const data = await res.json();
+          if (data.Success && typeof data.Total === "number") {
+            setTotalLandingPages(data.Total);
+          }
+        } catch (err) {
+          console.error("Failed to fetch total landing page:", err);
+        }
+      };
+  
+      fetchTotalLandingPages();
+    }, []);
   return (
     <>
       <div className="grid xl:grid-cols-3 xl:gap-4 gap-4 sm:grid-cols-2 sm:gap-6">
@@ -20,7 +45,7 @@ export default function CardHeader() {
             </span>
             {/* Main stat */}
             <h4 className="text-xl font-bold text-gray-800 dark:text-white/90">
-              20
+              {totalLandingPages}
             </h4>
           </div>
 

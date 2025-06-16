@@ -40,7 +40,7 @@ export default function NewUserModal({
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog 

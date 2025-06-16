@@ -1,13 +1,16 @@
-          
+import { forwardRef, useImperativeHandle } from "react";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import { useState } from "react";
 
 type UserData = {
   id: number;
   name: string;
   email: string;
   position: string;
+};
+
+export type DeleteUserModalFormRef = {
+  submitDelete: () => void;
 };
 
 type DeleteUserModalFormProps = {
@@ -17,27 +20,63 @@ type DeleteUserModalFormProps = {
   onDelete: () => void;
 };
 
-const DeleteUserModalForm = ({ user, error, isDeleting, onDelete }: DeleteUserModalFormProps) => {
-  if (!user) return null;
+const DeleteUserModalForm = forwardRef<DeleteUserModalFormRef, DeleteUserModalFormProps>(
+  ({ user, error, isDeleting, onDelete }, ref) => {
+    useImperativeHandle(ref, () => ({
+      // submitDelete: () => {
+      //   onDelete();
+      //   return true;
+      // },
+      submitDelete: async () => {
+        console.log('submitDelete triggered');
+        await onDelete();
+        return true;
+      }
+    }));
 
-  return (
-    <div className="space-y-6">
-      {/* User Name */}
-      <div>
-        <Label>User Name</Label>
-        <Input 
-          type="text"  
-          placeholder="user"
-          value={user.name}
-          readonly
-          className="w-full text-sm sm:text-base h-10 px-3"
-        />
+    if (!user) return null;
+
+    return (
+      <div className="space-y-6">
+        {/* Name */}
+        <div>
+          <Label>Name</Label>
+          <Input 
+            type="text"  
+            value={user.name}
+            disabled
+            className="w-full text-sm sm:text-base h-10 px-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Email */}
+        <div>
+          <Label>Email</Label>
+          <Input 
+            type="email"  
+            value={user.email}
+            disabled
+            className="w-full text-sm sm:text-base h-10 px-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Position */}
+        <div>
+          <Label>Position</Label>
+          <Input 
+            type="text"  
+            value={user.position}
+            disabled
+            className="w-full text-sm sm:text-base h-10 px-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
+          />
+        </div>
+
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
-    </div>
-  )
-};
+    );
+  }
+); // ✅ penutup forwardRef
 
-DeleteUserModalForm.displayName = 'DeleteUserModalForm';
+DeleteUserModalForm.displayName = "DeleteUserModalForm";
 
 export default DeleteUserModalForm;

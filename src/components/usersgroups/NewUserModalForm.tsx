@@ -1,7 +1,8 @@
 import { forwardRef, useState, useImperativeHandle } from "react";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
+import Swal from "../utils/AlertContainer";
 
 
 // Define the ref methods that parent can call
@@ -107,13 +108,19 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
         throw new Error(errorMessage);
       }
 
+      // Swal.fire({
+      //   title: "Success",
+      //   text: "User successfully added!",
+      //   width: 300,
+      //   icon: "success"
+      // });
       Swal.fire({
-        title: "Success",
+        // title: "Success",
         text: "User successfully added!",
-        width: 300,
-        icon: "success"
+        icon: "success",
+        duration: 3000
       });
-      
+
       if (onSuccess) onSuccess(); 
 
       // Reset form on success
@@ -161,11 +168,11 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
 
   // Handle input changes - dengan safety check
   const handleInputChange = (field: keyof UserData, value: string) => {
-    console.log(`Input changed - ${field}:`, value);
+    // console.log(`Input changed - ${field}:`, value);
     
     // Prevent submit trigger dari input change
     if (isSubmitting) {
-      console.log('Ignoring input change during submission');
+      // console.log('Ignoring input change during submission');
       return;
     }
     

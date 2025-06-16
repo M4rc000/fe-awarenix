@@ -6,17 +6,17 @@ import {
   Transition,
 } from '@headlessui/react'
 import { Fragment } from 'react'
-import NewSendingProfilesModalForm from './NewSendingProfilesModalForm'
+import NewLandingPageModalForm from './NewLandingPageModalForm'
 
-export type NewGroupModalProps = {
+export type NewLandingPageProps = {
   isOpen: boolean
   onClose: () => void
 }
 
-export default function NewEmailTemplatesModal({
+export default function NewLandingPageModal({
   isOpen,
   onClose,
-}: NewGroupModalProps) {
+}: NewLandingPageProps) {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog open={isOpen} onClose={onClose} className="relative z-[999]">
@@ -47,9 +47,9 @@ export default function NewEmailTemplatesModal({
             <DialogPanel className="w-full xl:max-w-fit box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5 z-[9999999999999]">
               
               {/* HEADER */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-b-gray-300 dark:border-b-gray-800 flex-shrink-0">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-b-gray-700 flex-shrink-0">
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  New Sending Profiles
+                  New Landing Page
                 </DialogTitle>
                 <button
                   onClick={onClose}
@@ -62,7 +62,7 @@ export default function NewEmailTemplatesModal({
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <NewSendingProfilesModalForm />
+                <NewLandingPageModalForm />
               </div>
 
               {/* FOOTER */}

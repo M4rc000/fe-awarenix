@@ -3,7 +3,7 @@ import CardHeader from "../../components/landingpages/CardHeader";
 import Breadcrump from "../../components/utils/Breacrump";
 import { TableIcon } from "../../icons";
 import Button from "../../components/ui/button/Button";
-import NewEmailTemplatesModal from "../../components/emailtemplates/NewEmailTemplatesModal";
+import NewLandingPageModal from "../../components/landingpages/NewLandingPageModal";
 import TableLandingPages from "../../components/landingpages/TableLandingPages";
 
 export default function LandingPages() {
@@ -20,7 +20,7 @@ export default function LandingPages() {
 
       <TableLandingPages/>
 
-      <NewEmailTemplatesModal
+      <NewLandingPageModal
         isOpen={newModalOpen}
         onClose={() => setNewModalOpen(false)}
       />

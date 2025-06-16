@@ -1,16 +1,18 @@
-import {
-  ArrowUpIcon,
-} from "../../icons";
 import { useState, useEffect } from "react";
 import { FaUser } from "react-icons/fa";
 import Badge from "../ui/badge/Badge";
 import { MdGroups } from "react-icons/md";
 import { useSidebar } from "../../context/SidebarContext";
+import { CgArrowsExchange } from "react-icons/cg";
+import { TbArrowBigUpLine, TbArrowBigDownLine } from "react-icons/tb";
 
 export default function CardHeader() {
   const { isExpanded, isHovered } = useSidebar();
   const [totalGroups, setTotalGroups] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [growthDataUser, setGrowthDataUser] = useState(null);
+  const [growthDataGroup, setGrowthDataGroup] = useState(null);
+
   
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL;
@@ -56,6 +58,70 @@ export default function CardHeader() {
     fetchTotalUsers();
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const API_URL = import.meta.env.VITE_API_URL;
+    fetch(`${API_URL}/analytics/growth-percentage?type=groups`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    })
+      .then(res => {
+        // Check if response is ok
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        return res.json();
+      })
+      .then(data => {
+        if (data.success && data.data) {
+          setGrowthDataGroup(data.data);
+          console.log("💾 Data saved to state:", data.data);
+        } else {
+          console.warn("⚠️ No data received or success = false");
+        }
+      })
+      .catch(error => {
+        console.error("❌ Fetch error:", error);
+        console.error("🔍 Error details:", error.message);
+      });
+  }, []);
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const API_URL = import.meta.env.VITE_API_URL;
+    fetch(`${API_URL}/analytics/growth-percentage?type=users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    })
+      .then(res => {
+        // Check if response is ok
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        return res.json();
+      })
+      .then(data => {
+        if (data.success && data.data) {
+          setGrowthDataUser(data.data);
+          console.log("💾 Data saved to state:", data.data);
+        } else {
+          console.warn("⚠️ No data received or success = false");
+        }
+      })
+      .catch(error => {
+        console.error("❌ Fetch error:", error);
+        console.error("🔍 Error details:", error.message);
+      });
+  }, []);
+
   return (
     <>
       <div className="grid xl:grid-cols-3 xl:gap-4 gap-4 sm:grid-cols-2 sm:gap-6">
@@ -78,9 +144,28 @@ export default function CardHeader() {
 
           {/* Footer: badge bottom-right */}
           <div className="mt-2 xl:mr-5 flex justify-end">
-            <Badge color="success">
-              <ArrowUpIcon className="size-3 mr-1" />
-              11.01%
+            <Badge
+              color={
+                growthDataGroup?.growth_type === 'increase'
+                  ? 'success'
+                  : growthDataGroup?.growth_type === 'decrease'
+                  ? 'danger'
+                  : 'warning'
+              }
+              className="dark:text-gray-400"
+            >
+              {growthDataGroup?.growth_type === 'increase' && (
+                <TbArrowBigUpLine className="mr-1" />
+              )}
+              {growthDataGroup?.growth_type === 'decrease' && (
+                <TbArrowBigDownLine className="mr-1" />
+              )}
+              {growthDataGroup?.growth_type === 'no_change' && (
+                <span className="mr-1 rotate-180 inline-block">
+                  <CgArrowsExchange className="mr-1" />
+                </span>
+              )}
+              {growthDataGroup?.growth_percentage.toFixed(2)}%
             </Badge>
           </div>
         </div>
@@ -99,9 +184,26 @@ export default function CardHeader() {
             </h4>
           </div>
           <div className="mt-2 xl:mr-4 flex justify-end">
-            <Badge color="success">
-              <ArrowUpIcon className="size-3 mr-1" />
-              11.01%
+            <Badge
+              color={
+                growthDataUser?.growth_type === 'increase'
+                  ? 'success'
+                  : growthDataUser?.growth_type === 'decrease'
+                  ? 'danger'
+                  : 'warning'
+                }
+              className="dark:text-gray-400"
+            >
+              {growthDataUser?.growth_type === 'increase' && (
+                  <TbArrowBigUpLine className="mr-1"/>
+                )}
+              {growthDataUser?.growth_type === 'decrease' && (
+                <TbArrowBigDownLine className="mr-1"/>
+              )}
+              {growthDataUser?.growth_type === 'no_change' && (
+                <CgArrowsExchange className="mr-1" />
+              )}
+              {growthDataUser?.growth_percentage.toFixed(2)}%
             </Badge>
           </div>
         </div>

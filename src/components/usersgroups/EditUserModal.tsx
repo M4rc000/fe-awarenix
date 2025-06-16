@@ -7,7 +7,7 @@ import {
 } from '@headlessui/react'
 import { Fragment, useRef, useState} from 'react'
 import EditUserModalForm, {EditUserModalFormRef} from './EditUserModalForm'
-import Swal from 'sweetalert2';
+import Swal from '../utils/AlertContainer'
 
 interface User {
   id: number;
@@ -104,10 +104,9 @@ export default function EditUserModal({
                       if (success) {
                         onClose();
                         Swal.fire({
-                          title: 'Success',
                           text: 'User updated successfully',
                           icon: "success",
-                          timer: 2000
+                          duration: 2000
                         })
                         
                         // Panggil callback untuk refresh data
@@ -116,18 +115,16 @@ export default function EditUserModal({
                         }
                       } else {
                         Swal.fire({
-                          title: 'Error',
                           text: 'Failed to update user. Please try again!',
                           icon: "error",
-                          timer: 2000
+                          duration: 2000
                         })
                       }
                     } catch (error) {
                       Swal.fire({
-                        title: 'Error',
                         text: 'An error occurred while updating user!',
                         icon: "error",
-                        timer: 2000
+                        duration: 2000
                       })
                     } finally {
                       setIsLoading(false);

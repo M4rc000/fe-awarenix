@@ -81,13 +81,7 @@ const PhishingEmail = () => {
           </div>
         )}
 
-        {/* Interaction Rate Badge */}
-        {card.interactionRate && (
-          <div className="bg-blue-400 text-white text-center py-2 font-medium">
-            Interaction Rate: {card.interactionRate}
-            <span className="float-right mr-4">Payload: {card.payload}</span>
-          </div>
-        )}
+        <img src="/images/phising-material/quarantine.png" alt="" />
 
         {/* Content */}
         <div className="p-4">
@@ -248,7 +242,7 @@ const PhishingEmail = () => {
 
           {/* Search */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Search</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-400">Search</label>
             <div className="relative">
               <input
                 type="text"

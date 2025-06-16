@@ -14,6 +14,8 @@ import ForgotPassword from "./components/auth/ForgotPassword";
 import SendingProfiles from "./pages/SendingProfiles/SendingProfiles"
 import LandingPages from "./pages/LandingPages/LandingPages";
 import PhishingEmail from "./pages/PhisingEmail/PhisingEmail";
+import { AlertContainer } from "./components/utils/AlertContainer";
+import AuthWatcher from "./components/utils/AuthWatcher";
 
 export default function App() {
   return (
@@ -23,6 +25,7 @@ export default function App() {
       </Helmet>
       <Router>
         <ScrollToTop />
+        <AuthWatcher />
         <Routes>
           {/* Dashboard Layout */}
           <Route element={<ProtectedRoute/>}>
@@ -50,6 +53,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
+      <AlertContainer />
     </>
   );
 }
