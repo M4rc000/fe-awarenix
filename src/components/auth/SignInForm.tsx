@@ -35,7 +35,7 @@ export default function SignInForm() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, status: isChecked ? "KeepMeLoggedIn" : "", }),
         }
       );
 

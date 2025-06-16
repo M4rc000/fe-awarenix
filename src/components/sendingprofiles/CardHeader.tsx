@@ -1,10 +1,65 @@
-import {
-  ArrowUpIcon,
-} from "../../icons";
+import { TbArrowBigDownLine, } from "react-icons/tb";
+import { CgArrowsExchange } from "react-icons/cg";
 import Badge from "../ui/badge/Badge";
 import { TfiEmail } from "react-icons/tfi";
+import { useEffect, useState } from "react";
 
 export default function CardHeader() {
+  const [totalSendingProfiles, setTotalSendingProfiles] = useState(0);
+  const [growthDataSendingProfiles, setGrowthDataSendingProfiles] = useState(null);
+    
+  useEffect(() => {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const fetchTotalLandingPages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_URL}/sending-profile/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.Success && typeof data.Total === "number") {
+          setTotalSendingProfiles(data.Total);
+        }
+      } catch (err) {
+        console.error("Failed to fetch total landing page:", err);
+      }
+    };
+
+    fetchTotalLandingPages();
+  }, []);
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const API_URL = import.meta.env.VITE_API_URL;
+    fetch(`${API_URL}/analytics/growth-percentage?type=sendingprofiles`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    })
+      .then(res => {
+        // Check if response is ok
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        return res.json();
+      })
+      .then(data => {
+        if (data.success && data.data) {
+          setGrowthDataSendingProfiles(data.data);
+        } else {
+          console.warn("⚠️ No data received or success = false");
+        }
+      })
+      .catch(error => {
+        console.error("❌ Fetch error:", error);
+        console.error("🔍 Error details:", error.message);
+      });
+  }, []);
   return (
     <>
       <div className="grid xl:grid-cols-3 xl:gap-4 gap-4 sm:grid-cols-2 sm:gap-6">
@@ -20,16 +75,35 @@ export default function CardHeader() {
             </span>
             {/* Main stat */}
             <h4 className="text-xl font-bold text-gray-800 dark:text-white/90">
-              20
+              {totalSendingProfiles}
             </h4>
           </div>
 
 
           {/* Footer: badge bottom-right */}
           <div className="mt-2 flex justify-end">
-            <Badge color="success">
-              <ArrowUpIcon className="size-3 mr-1" />
-              11.01%
+            <Badge
+              color={
+                growthDataSendingProfiles?.growth_type === 'increase'
+                  ? 'success'
+                  : growthDataSendingProfiles?.growth_type === 'decrease'
+                  ? 'danger'
+                  : 'warning'
+              }
+              className="dark:text-gray-400"
+            >
+              {growthDataSendingProfiles?.growth_type === 'increase' && (
+                <TbArrowBigUpLine className="mr-1" />
+              )}
+              {growthDataSendingProfiles?.growth_type === 'decrease' && (
+                <TbArrowBigDownLine className="mr-1" />
+              )}
+              {growthDataSendingProfiles?.growth_type === 'no_change' && (
+                <span className="mr-1 rotate-180 inline-block">
+                  <CgArrowsExchange className="mr-1" />
+                </span>
+              )}
+              {growthDataSendingProfiles?.growth_percentage.toFixed(2)}%
             </Badge>
           </div>
         </div>

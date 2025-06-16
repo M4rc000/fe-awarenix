@@ -59,6 +59,7 @@ export default function CardHeader() {
         console.error("🔍 Error details:", error.message);
       });
   }, []);
+  
   return (
     <>
       <div className="grid xl:grid-cols-3 xl:gap-4 gap-4 sm:grid-cols-2 sm:gap-6">

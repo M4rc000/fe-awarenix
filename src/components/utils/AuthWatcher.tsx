@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2'
 
 function isTokenValid(token: string | null): boolean {
   if (!token) return false;
@@ -21,27 +22,38 @@ export default function AuthWatcher() {
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
 
-      const valid = isTokenValid(token);
-
-      if (!token || !valid || !user) {
-        if (token) {
-          // Call backend logout (optional)
+      if(token || user){
+        const valid = isTokenValid(token);
+        if(!valid){
           await fetch("/api/v1/auth/logout", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
+          
+          Swal.fire({
+            title: 'Session Expired!',
+            text: 'Please log in.',
+            showDenyButton: false,
+            showCancelButton: false,
+            confirmButtonText: "Oke",
+            denyButtonText: `Don't save`,
+            icon: "warning",
+            width: 300,
+          }).then(() => {
+            // Clear localStorage
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            
+            // Redirect
+            navigate("/login", { replace: true });
+          });
+
+    
         }
-
-        // Clear localStorage
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-
-        // Redirect
-        navigate("/login", { replace: true });
-      }
-    }, 15000); // every 15 seconds
+      }    
+    }, 30000); // every 15 seconds
 
     return () => clearInterval(interval);
   }, [navigate]);

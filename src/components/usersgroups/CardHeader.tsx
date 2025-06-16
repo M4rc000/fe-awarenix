@@ -111,7 +111,6 @@ export default function CardHeader() {
       .then(data => {
         if (data.success && data.data) {
           setGrowthDataUser(data.data);
-          console.log("💾 Data saved to state:", data.data);
         } else {
           console.warn("⚠️ No data received or success = false");
         }
@@ -171,7 +170,7 @@ export default function CardHeader() {
         </div>
 
         {/* ─── Since Last Campaign ─── */}
-        <div className={`flex flex-col rounded-xl border xl:h-24 xl:w-60 ${isExpanded || isHovered ? 'xl:mx-22' : 'xl:mx-12' } border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-5 transition duration-300 ease-in-out cursor-pointer`}>
+        <div className={`flex flex-col rounded-xl border xl:h-24 xl:w-57 ${isExpanded || isHovered ? 'xl:mx-22' : 'xl:mx-12' } border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-5 transition duration-300 ease-in-out cursor-pointer`}>
           <div className="flex items-center space-x-3">
             <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
               <FaUser className="text-gray-800 text-xl dark:text-white/90" />

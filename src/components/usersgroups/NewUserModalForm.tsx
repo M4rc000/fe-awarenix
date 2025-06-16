@@ -1,11 +1,8 @@
 import { forwardRef, useState, useImperativeHandle } from "react";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-// import Swal from "sweetalert2";
 import Swal from "../utils/AlertContainer";
 
-
-// Define the ref methods that parent can call
 export type NewUserModalFormRef = {
   submitUsers: () => Promise<User | null>;
   user: User | null;
@@ -14,7 +11,6 @@ export type NewUserModalFormRef = {
 type NewUserModalFormProps = {
   onSuccess?: () => void;
 };
-
 
 // Define user data structure
 type UserData = {
@@ -193,7 +189,6 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
   // Handle form submit (untuk prevent default jika ada)
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submit prevented');
   };
 
   return (

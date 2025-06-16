@@ -35,7 +35,6 @@ export default function NewUserModal({
       }
     } catch (error) {
       console.error('Failed to save user:', error);
-      // Handle error (show toast, etc.)
     } finally {
       setIsSubmitting(false);
     }

@@ -91,7 +91,7 @@ const EmailBodyEditor = ({ templateName, envelopeSender, subject }) => {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg">
       {/* Tab Navigation */}
-      <div className="flex space-x-1 rounded-t-xl bg-gray-100 dark:bg-gray-800 p-1 mb-0">
+      <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 mb-0">
         {tabs.map((tab, index) => (
           <button
             key={index}
@@ -154,10 +154,10 @@ const EmailBodyEditor = ({ templateName, envelopeSender, subject }) => {
             <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-3 rounded">
               <strong>Tips:</strong>
               <ul className="mt-1 space-y-1 list-disc list-inside">
-                <li>Gunakan table-based layout untuk kompatibilitas email client</li>
-                <li>Selalu gunakan inline CSS untuk styling</li>
-                <li>Test di berbagai email client (Gmail, Outlook, dll)</li>
-                <li>Gunakan width dalam pixel untuk table utama (max 600px)</li>
+                <li>Use a table-based layout for email client compatibility.</li>
+                <li>Always use inline CSS for styling</li>
+                <li>Test on various email clients (Gmail, Outlook, etc.)</li>
+                <li>Use width in pixels for the main table (max 600px)</li>
               </ul>
             </div>
           </div>
@@ -198,13 +198,13 @@ const EmailBodyEditor = ({ templateName, envelopeSender, subject }) => {
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <div className="text-xs text-blue-700 dark:text-blue-300">
                   <strong>✅ Desktop Preview</strong><br/>
-                  Tampilan saat ini menunjukkan bagaimana email akan terlihat di desktop client seperti Outlook dan Thunderbird.
+                  The current view shows how the email will look in desktop clients such as Outlook and Thunderbird.
                 </div>
               </div>
               <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                 <div className="text-xs text-orange-700 dark:text-orange-300">
                   <strong>⚠️ Mobile Compatibility</strong><br/>
-                  Pastikan menggunakan responsive design dengan media queries untuk tampilan mobile yang optimal.
+                  Be sure to use responsive design with media queries for optimal mobile viewing.
                 </div>
               </div>
             </div>
