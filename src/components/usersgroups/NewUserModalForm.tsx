@@ -72,13 +72,21 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
     try {
       const API_URL = import.meta.env.VITE_API_URL;
       const token = localStorage.getItem("token");
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      const createdBy = userData?.id || 0; 
       const response = await fetch(`${API_URL}/users/register`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        body: JSON.stringify(user),
+        body: JSON.stringify({
+          name: user.name,
+          email: user.email,
+          position: user.position,   
+          password: user.password,    
+          createdBy: createdBy
+        }),
       });
 
 
@@ -104,12 +112,6 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
         throw new Error(errorMessage);
       }
 
-      // Swal.fire({
-      //   title: "Success",
-      //   text: "User successfully added!",
-      //   width: 300,
-      //   icon: "success"
-      // });
       Swal.fire({
         // title: "Success",
         text: "User successfully added!",

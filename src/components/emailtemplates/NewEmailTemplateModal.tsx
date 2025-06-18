@@ -6,21 +6,21 @@ import {
   Transition,
 } from '@headlessui/react'
 import { Fragment } from 'react'
-import NewEmailTemplatesModalForm, {NewEmailTemplatesModalFormRef} from './NewEmailTemplatesModalForm'
+import NewEmailTemplateModalForm, {NewEmailTemplateModalFormRef} from './NewEmailTemplateModalForm'
 import { useRef, useState } from 'react'
 
-export type NewEmailTemplatesModalProps = {
+export type NewEmailTemplateModalProps = {
   isOpen: boolean
   onClose: () => void
   onEmailTemplateAdded: () => void
 }
 
-export default function NewEmailTemplatesModal({
+export default function NewEmailTemplateModal({
   isOpen,
   onClose,
   onEmailTemplateAdded,
-}: NewEmailTemplatesModalProps) {
-  const formRef = useRef<NewEmailTemplatesModalFormRef>(null);
+}: NewEmailTemplateModalProps) {
+  const formRef = useRef<NewEmailTemplateModalFormRef>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSave = async () => {
@@ -28,19 +28,20 @@ export default function NewEmailTemplatesModal({
     
     try {
       setIsSubmitting(true);
-      const success = await formRef.current.submitUsers();
+      const success = await formRef.current.submitEmailTemplate();
       
       if (success) {
         onEmailTemplateAdded(); // ⬅️ panggil reload
         onClose();
       }
     } catch (error) {
-      console.error('Failed to save user:', error);
+      console.error('Failed to save email template:', error);
       // Handle error (show toast, etc.)
     } finally {
       setIsSubmitting(false);
     }
   };
+  
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog open={isOpen} onClose={onClose} className="relative z-[999]">
@@ -86,7 +87,7 @@ export default function NewEmailTemplatesModal({
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <NewEmailTemplatesModalForm ref={formRef} onSuccess={onEmailTemplateAdded}/>
+                <NewEmailTemplateModalForm ref={formRef} onSuccess={onEmailTemplateAdded}/>
               </div>
 
               {/* FOOTER */}

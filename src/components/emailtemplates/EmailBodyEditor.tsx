@@ -1,9 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const EmailBodyEditor = ({ templateName, envelopeSender, subject }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [htmlContent, setHtmlContent] = useState(`<!DOCTYPE html>
-<html>
+const DEFAULT_TEMPLATE = `<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,7 +81,19 @@ const EmailBodyEditor = ({ templateName, envelopeSender, subject }) => {
         </tr>
     </table>
 </body>
-</html>`);
+</html>`;
+
+const EmailBodyEditor = ({ templateName, envelopeSender, subject, onBodyChange, initialContent = "" }) => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [htmlContent, setHtmlContent] = useState(() =>
+    initialContent == "" ? DEFAULT_TEMPLATE : initialContent
+  );
+
+  useEffect(() => {
+    if (onBodyChange) {
+      onBodyChange(htmlContent);
+    }
+  }, [htmlContent]);
 
   const tabs = ["HTML Editor", "Live Preview"];
 

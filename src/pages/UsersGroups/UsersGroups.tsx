@@ -8,13 +8,14 @@ import ManageUser from "./ManageUser";
 export default function UsersGroups() {
   const [activeTab, setActiveTab] = useState('Groups');
   const tabs = ['Groups', 'Users'];
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Groups':
-        return <ManageGroup />;
+        return <ManageGroup reloadTrigger={reloadTrigger} onReload={() => setReloadTrigger(r => r + 1)}/>;
       case 'Users':
-        return <ManageUser />;
+        return <ManageUser reloadTrigger={reloadTrigger} onReload={() => setReloadTrigger(r => r + 1)}/>;
       default:
         return null;
     }
@@ -25,7 +26,7 @@ export default function UsersGroups() {
       <Breadcrump icon={<GroupIcon/>} title="Users & Groups" />
       <div className="grid grid-cols-12 gap-4 md:gap-6 mt-10">
         <div className="col-span-12 space-y-6 xl:col-span-7">
-          <CardHeader />
+          <CardHeader reloadTrigger={reloadTrigger}/>
         </div>
       </div>
       {/* Navigation */}

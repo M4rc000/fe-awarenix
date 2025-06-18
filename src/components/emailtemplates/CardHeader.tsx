@@ -2,8 +2,9 @@ import Badge from "../ui/badge/Badge";
 import { TfiEmail } from "react-icons/tfi";
 import { useEffect, useState } from "react";
 import { CgArrowsExchange } from "react-icons/cg";
+import { TbArrowBigUpLine, TbArrowBigDownLine } from "react-icons/tb";
 
-export default function CardHeader() {
+export default function CardHeader({ reloadTrigger }: { reloadTrigger: number }) {
   const [totalEmailTemplates, setTotalEmailTemplates] = useState(0);
   const [growthDataEmailTemplates, setGrowthDataEmailTemplates] = useState(null);
   
@@ -27,7 +28,7 @@ export default function CardHeader() {
     };
 
     fetchTotalEmailTemplates();
-  }, []);
+  }, [reloadTrigger]); // REFRESH SAAT TRIGGER BERUBAH
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,29 +59,32 @@ export default function CardHeader() {
         console.error("❌ Fetch error:", error);
         console.error("🔍 Error details:", error.message);
       });
-  }, []);
+  }, [reloadTrigger]); // REFRESH SAAT TRIGGER BERUBAH
   
   return (
     <>
       <div className="grid xl:grid-cols-3 xl:gap-4 gap-4 sm:grid-cols-2 sm:gap-6">
-        {/* ─── Total Campaign ─── */}
-        <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-4 xl:h-24 xl:w-[310px] dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-5 transition duration-300 ease-in-out cursor-pointer">
-          {/* Header: icon + title */}
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
-              <TfiEmail className="text-gray-800 text-xl dark:text-white/90" />
+        <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-4 xl:h-24 xl:w-[310px] dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-2 transition duration-300 ease-in-out cursor-pointer">
+          
+          {/* Header section */}
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            {/* Left icon and label */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <TfiEmail className="text-gray-800 text-xl dark:text-white/90" />
+              </div>
+              <span className="text-lg xl:text-base font-medium text-gray-500 dark:text-gray-400">
+                Total Email Template
+              </span>
             </div>
-            <span className="xl:text-lg text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Email Templates
-            </span>
-            {/* Main stat */}
-            <h4 className="text-xl font-bold text-gray-800 dark:text-white/90">
+
+            {/* Value */}
+            <h4 className="text-xl font-bold text-gray-800 dark:text-white">
               {totalEmailTemplates}
             </h4>
           </div>
 
-
-          {/* Footer: badge bottom-right */}
+          {/* Badge footer */}
           <div className="mt-2 flex justify-end">
             <Badge
               color={
@@ -90,7 +94,7 @@ export default function CardHeader() {
                   ? 'danger'
                   : 'warning'
               }
-              className="dark:text-gray-400"
+              className="dark:text-gray-400 text-sm"
             >
               {growthDataEmailTemplates?.growth_type === 'increase' && (
                 <TbArrowBigUpLine className="mr-1" />

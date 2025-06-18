@@ -243,15 +243,25 @@ export default function TableLandingPages() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map(row => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    No data available
+                  </div>
+                </td>
+              </tr>
+            )}
           </TableBody>
         </Table>
       </div>

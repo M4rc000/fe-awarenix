@@ -5,29 +5,25 @@ import {
   DialogTitle,
   Transition,
 } from '@headlessui/react'
-import { Fragment, useRef } from 'react'
-import ShowUserDetailModalForm, { ShowUserModalFormRef } from './ShowUserDetailModalForm'
+import { Fragment } from 'react'
+import ShowEmailTemplateDetailModalForm, {ShowEmailTemplateDetailModalFormRef} from './ShowEmailTemplateDetailModalForm'
+import { useRef } from 'react'
 
-export type ShowUserModalProps = {
+export type ShowEmailTemplateDetailModalProps = {
   isOpen: boolean
   onClose: () => void
-  user: User | null;
+  emailTemplate: EmailTemplate | null;
 }
 
-export default function ShowUserModal({
+export default function ShowEmailTemplateDetailModal({
   isOpen,
   onClose,
-  user,
-}: ShowUserModalProps) {
-  const formRef = useRef<ShowUserModalFormRef>(null);
-
+  emailTemplate,
+}: ShowEmailTemplateDetailModalProps) {
+  const formRef = useRef<ShowEmailTemplateDetailModalFormRef>(null);
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog 
-        open={isOpen} 
-        onClose={onClose} // Allow closing via backdrop/escape key
-        className="relative z-[999]"
-      >
+      <Dialog open={isOpen} onClose={onClose} className="relative z-[999]">
         {/* Backdrop with fade animation */}
         <Transition.Child
           as={Fragment}
@@ -52,19 +48,17 @@ export default function ShowUserModal({
             leaveFrom="translate-y-0 opacity-100 scale-100"
             leaveTo="translate-y-4 opacity-0 scale-95"
           >
-            <DialogPanel 
-              className="w-full max-w-3xl box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <DialogPanel className="w-full xl:max-w-fit box-border rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-hidden dark:border dark:border-gray-700 flex flex-col max-h-[90vh] xl:mt-5 z-[9999999999999]">
+              
               {/* HEADER */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-b-gray-700 flex-shrink-0">
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Detail User
+                  Detail Email Template
                 </DialogTitle>
                 <button
                   onClick={onClose}
                   aria-label="Close modal"
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-gray-400 hover:text-gray-600"
                 >
                   ✕
                 </button>
@@ -72,7 +66,7 @@ export default function ShowUserModal({
 
               {/* BODY */}
               <div className="px-6 py-4 overflow-y-auto flex-1">
-                <ShowUserDetailModalForm ref={formRef} user={user!}/>
+                <ShowEmailTemplateDetailModalForm ref={formRef} emailTemplate={emailTemplate!}/>
               </div>
 
               {/* FOOTER */}
@@ -85,6 +79,7 @@ export default function ShowUserModal({
                 </button>
               </div>
             </DialogPanel>
+
           </Transition.Child>
         </div>
       </Dialog>

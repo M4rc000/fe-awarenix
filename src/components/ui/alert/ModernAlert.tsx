@@ -70,7 +70,6 @@ const ModernAlert = ({
       lg:p-3
       xl:p-3
       xl:ml-[15rem]
-      w-fit 
       flex 
       items-center 
       justify-between 
@@ -80,12 +79,10 @@ const ModernAlert = ({
       top-4
       right-5
       z-50
-      min-w-[250px]
       dark:bg-white
-      max-w-xs
-      sm:max-w-sm
-      md:max-w-md
-      lg:max-w-lg
+      w-auto
+      max-w-full
+      pr-8
       shadow-lg 
       ${className}
     `}>
@@ -100,7 +97,7 @@ const ModernAlert = ({
         />
       )}
       
-      <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+      <div className="flex items-center space-x-2 sm:space-x-3 max-w-[100vw]">
         <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${config.textColor} flex-shrink-0`} />
         <div className={`${config.textColor} text-xs sm:text-sm break-words`}>
           {children}

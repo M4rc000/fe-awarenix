@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import { FaUser } from "react-icons/fa";
 import Badge from "../ui/badge/Badge";
 import { MdGroups } from "react-icons/md";
-import { useSidebar } from "../../context/SidebarContext";
 import { CgArrowsExchange } from "react-icons/cg";
 import { TbArrowBigUpLine, TbArrowBigDownLine } from "react-icons/tb";
 
-export default function CardHeader() {
-  const { isExpanded, isHovered } = useSidebar();
+export type CardHeaderUsersGroupsProps = {
+  reloadTrigger: number
+}
+
+export default function CardHeader({reloadTrigger}: CardHeaderUsersGroupsProps) {
   const [totalGroups, setTotalGroups] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [growthDataUser, setGrowthDataUser] = useState(null);
   const [growthDataGroup, setGrowthDataGroup] = useState(null);
 
-  
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL;
     const fetchTotalGroups = async () => {
@@ -34,7 +35,7 @@ export default function CardHeader() {
     };
     
     fetchTotalGroups();
-  }, []);
+  }, [reloadTrigger]);
   
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL;
@@ -56,7 +57,7 @@ export default function CardHeader() {
     };
 
     fetchTotalUsers();
-  }, []);
+  }, [reloadTrigger]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -79,7 +80,6 @@ export default function CardHeader() {
       .then(data => {
         if (data.success && data.data) {
           setGrowthDataGroup(data.data);
-          console.log("💾 Data saved to state:", data.data);
         } else {
           console.warn("⚠️ No data received or success = false");
         }
@@ -121,92 +121,71 @@ export default function CardHeader() {
       });
   }, []);
 
+  const renderBadge = (growth) => {
+    if (!growth) return null;
+
+    const icon =
+      growth.growth_type === "increase" ? (
+        <TbArrowBigUpLine className="mr-1" />
+      ) : growth.growth_type === "decrease" ? (
+        <TbArrowBigDownLine className="mr-1" />
+      ) : (
+        <CgArrowsExchange className="mr-1 rotate-180" />
+      );
+
+    const color =
+      growth.growth_type === "increase"
+        ? "success"
+        : growth.growth_type === "decrease"
+        ? "danger"
+        : "warning";
+
+    return (
+      <Badge color={color} className="dark:text-gray-400">
+        {icon}
+        {growth.growth_percentage.toFixed(2)}%
+      </Badge>
+    );
+  };
+
   return (
-    <>
-      <div className="grid xl:grid-cols-3 xl:gap-4 gap-4 sm:grid-cols-2 sm:gap-6">
-        {/* ─── Total Users ─── */}
-        <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-4 xl:h-24 xl:w-64 dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-5 transition duration-300 ease-in-out cursor-pointer">
-          {/* Header: icon + title */}
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+    // Option 1: Full width grid with equal columns
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 w-full">
+      {/* Total Groups */}
+      <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-2 transition duration-300 ease-in-out cursor-pointer">
+        <div className="flex justify-between items-center flex-wrap gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg dark:bg-gray-800 flex-shrink-0">
               <MdGroups className="text-gray-800 text-xl dark:text-white/90" />
             </div>
-            <span className="text-xl font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-base font-medium text-gray-500 dark:text-gray-400 truncate">
               Total Groups
             </span>
-            {/* Main stat */}
-            <h4 className="text-lg font-bold text-gray-800 dark:text-white/90">
-              {totalGroups}
-            </h4>
           </div>
-
-
-          {/* Footer: badge bottom-right */}
-          <div className="mt-2 xl:mr-5 flex justify-end">
-            <Badge
-              color={
-                growthDataGroup?.growth_type === 'increase'
-                  ? 'success'
-                  : growthDataGroup?.growth_type === 'decrease'
-                  ? 'danger'
-                  : 'warning'
-              }
-              className="dark:text-gray-400"
-            >
-              {growthDataGroup?.growth_type === 'increase' && (
-                <TbArrowBigUpLine className="mr-1" />
-              )}
-              {growthDataGroup?.growth_type === 'decrease' && (
-                <TbArrowBigDownLine className="mr-1" />
-              )}
-              {growthDataGroup?.growth_type === 'no_change' && (
-                <span className="mr-1 rotate-180 inline-block">
-                  <CgArrowsExchange className="mr-1" />
-                </span>
-              )}
-              {growthDataGroup?.growth_percentage.toFixed(2)}%
-            </Badge>
-          </div>
+          <h4 className="text-xl font-bold text-gray-800 dark:text-white text-right whitespace-nowrap">
+            {totalGroups}
+          </h4>
         </div>
+        <div className="mt-2 flex justify-end">{renderBadge(growthDataGroup)}</div>
+      </div>
 
-        {/* ─── Since Last Campaign ─── */}
-        <div className={`flex flex-col rounded-xl border xl:h-24 xl:w-57 ${isExpanded || isHovered ? 'xl:mx-22' : 'xl:mx-12' } border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-5 transition duration-300 ease-in-out cursor-pointer`}>
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+      {/* Total Users */}
+      <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] hover:shadow-sm hover:shadow-gray-600 hover:-translate-y-2 transition duration-300 ease-in-out cursor-pointer">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg dark:bg-gray-800">
               <FaUser className="text-gray-800 text-xl dark:text-white/90" />
             </div>
-            <span className="text-xl font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-lg font-medium text-gray-500 dark:text-gray-400">
               Total Users
             </span>
-            <h4 className="text-lg font-bold text-gray-800 dark:text-white/90">
-              {totalUsers}
-            </h4>
           </div>
-          <div className="mt-2 xl:mr-4 flex justify-end">
-            <Badge
-              color={
-                growthDataUser?.growth_type === 'increase'
-                  ? 'success'
-                  : growthDataUser?.growth_type === 'decrease'
-                  ? 'danger'
-                  : 'warning'
-                }
-              className="dark:text-gray-400"
-            >
-              {growthDataUser?.growth_type === 'increase' && (
-                  <TbArrowBigUpLine className="mr-1"/>
-                )}
-              {growthDataUser?.growth_type === 'decrease' && (
-                <TbArrowBigDownLine className="mr-1"/>
-              )}
-              {growthDataUser?.growth_type === 'no_change' && (
-                <CgArrowsExchange className="mr-1" />
-              )}
-              {growthDataUser?.growth_percentage.toFixed(2)}%
-            </Badge>
-          </div>
+          <h4 className="text-xl font-bold text-gray-800 dark:text-white">
+            {totalUsers}
+          </h4>
         </div>
+        <div className="mt-2 flex justify-end">{renderBadge(growthDataUser)}</div>
       </div>
-    </>
+    </div>
   );
 }

@@ -66,7 +66,7 @@ export const AlertContainer = () => {
   };
   
   return (
-    <div className="fixed top-20 right-5 z-50 space-y-2">
+    <div className="fixed top-20 right-5 z-50 space-y-2 w-full">
       {alerts.map((alert, index) => (
         <div key={alert.id} style={{ transform: `translateY(${index * 60}px)` }}>
           <ModernAlert

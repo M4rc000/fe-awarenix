@@ -12,6 +12,7 @@ type UserData = {
   name: string;
   email: string;
   position: string;
+  password: string;
 };
 
 type EditUserModalFormProps = {
@@ -31,6 +32,8 @@ const EditUserModalForm = forwardRef<EditUserModalFormRef, EditUserModalFormProp
         
         const API_URL = import.meta.env.VITE_API_URL;
         const token = localStorage.getItem("token");
+        const userData = JSON.parse(localStorage.getItem("user") || "{}");
+        const updatedBy = userData?.id || 0; 
 
         if (!token) {
           return false;
@@ -42,7 +45,15 @@ const EditUserModalForm = forwardRef<EditUserModalFormRef, EditUserModalFormProp
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(
+            {
+              name: formData.name,
+              email: formData.email,
+              position: formData.position,
+              password: formData.password,
+              updatedBy: updatedBy,
+            }
+          ),
         });
 
         
@@ -97,6 +108,16 @@ const EditUserModalForm = forwardRef<EditUserModalFormRef, EditUserModalFormProp
               placeholder="Position"
               value={formData.position}
               onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div>
+            <Label>Password</Label>
+            <Input
+              type="password"
+              placeholder="****"
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               disabled={isSubmitting}
             />
           </div>

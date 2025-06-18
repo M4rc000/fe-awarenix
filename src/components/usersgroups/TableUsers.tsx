@@ -36,15 +36,7 @@ interface User {
   updated_at: string;
 }
 
-type Props = {
-  data: User[];
-  setData: React.Dispatch<React.SetStateAction<User[]>>;
-  reloadTrigger?: number;
-};
-
-
-export default function TableUsers({reloadTrigger}: Props) {
-  // const [modalOpen, setModalOpen] = useState(false);
+export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?: number, onReload?: () => void }){
   const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
 
   const [search, setSearch] = useState('');
@@ -59,7 +51,7 @@ export default function TableUsers({reloadTrigger}: Props) {
   const [data, setData] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // CTRL K 
+  // CTRL K or Command K
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -104,7 +96,7 @@ export default function TableUsers({reloadTrigger}: Props) {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [reloadTrigger]);
 
   useEffect(() => {
   if (reloadTrigger && reloadTrigger > 0) {
@@ -145,6 +137,27 @@ export default function TableUsers({reloadTrigger}: Props) {
       {
         accessorKey: 'position',
         header: 'Position',
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Created At',
+        cell: ({ getValue }) => {
+          const raw = getValue();
+          if (!raw) return '-';
+
+          const date = new Date(raw);
+          if (isNaN(date.getTime())) return '-';
+          
+          return date.toLocaleString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }).replace(' pukul ', ' ');
+        }
       },
       {
         accessorKey: 'updatedAt',
@@ -274,7 +287,7 @@ export default function TableUsers({reloadTrigger}: Props) {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search or type command..."
+                placeholder="Search or type user..."
                 className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -342,15 +355,25 @@ export default function TableUsers({reloadTrigger}: Props) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map(row => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    No data available
+                  </div>
+                </td>
+              </tr>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -468,7 +491,10 @@ export default function TableUsers({reloadTrigger}: Props) {
           setSelectedUser(null);
         }}
         user={selectedUser}
-        onUserDeleted={() => fetchData()}
+        onUserDeleted={() => {
+          fetchData();
+          if (onReload) onReload();
+        }}
       />   
     </div>
   );

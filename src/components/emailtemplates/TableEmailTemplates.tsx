@@ -22,8 +22,20 @@ import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
+import Swal from '../utils/AlertContainer';
+import ShowEmailTemplateDetailModal from './ShowEmailTemplateDetailModal';
+import EditEmailTemplateModal from './EditEmailTemplateModal';
+import DeleteEmailTemplateModal from './DeleteEmailTemplateModal';
 
-export default function TableEmailTemplates() {
+interface EmailTemplate{
+  id: number;
+  templateName: string;
+  envelopeSender: string;
+  subject: string;
+  updated_at: string;
+}
+
+export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?: number, onReload?: () => void }){
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
   const [pagination, setPagination] = useState({
@@ -33,6 +45,9 @@ export default function TableEmailTemplates() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [data, setData] = useState<EmailTemplate[]>([]);
+  const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
+  const [selectedEmailTemplate, setSelectedEmailTemplate] = useState<EmailTemplate | null>(null);
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,37 +64,51 @@ export default function TableEmailTemplates() {
     };
   }, []);
 
-  interface EmailTemplates {
-    id: number;
-    name: string;
-    senderAddress: string;
-    subject: string;
-    body: string;
-    lastModified: string;
+  // FETCH DATA
+  const API_URL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`${API_URL}/email-template/all`, {
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch data');
+
+      const result = await res.json();
+      setData(result.Data || result.data || result);
+    } catch (err) {
+      Swal.fire({
+        text: 'Failed to load email template data',
+        duration: 2000,
+        icon: "error"
+      });
+      
+      window.location.reload();
+    }
+  }; 
+
+  // ACTIVATE FUNCTION MODAL
+  const onShowDetail = (emailTemplate: EmailTemplate) => {
+    setSelectedEmailTemplate(emailTemplate);
+    setActiveModal('detail');
+  }
+  
+  const onEdit = (emailTemplate: EmailTemplate) => {
+    setSelectedEmailTemplate(emailTemplate);
+    setActiveModal('edit');
+  }
+  
+  const onDelete = (emailTemplate: EmailTemplate) => {
+    setSelectedEmailTemplate(emailTemplate);
+    setActiveModal('delete');
   }
 
-  const tableData: EmailTemplates[] = [
-    {
-      id: 1,
-      name: "Google Meet",
-      senderAddress: "",
-      subject: "Google Meet Invitation",
-      body:"",
-      lastModified: "01 March 2025",
-    },
-    {
-      id: 2,
-      name: "Zoom",
-      senderAddress: "",
-      subject: "Zoom Invitation",
-      body:"",
-      lastModified: "01 March 2025",
-    },
-  ];
-
-  const data = useMemo(() => tableData, []);
-
-  const columns = useMemo<ColumnDef<EmailTemplates>[]>(
+  const columns = useMemo<ColumnDef<EmailTemplate>[]>(
     () => [
       {
         accessorKey: 'id',
@@ -91,26 +120,68 @@ export default function TableEmailTemplates() {
         header: 'Name',
       },
       {
+        accessorKey: 'envelopeSender',
+        header: 'Envelope Sender',
+      },
+      {
         accessorKey: 'subject',
         header: 'Subject',
       },
       {
-        accessorKey: 'lastModified',
+        accessorKey: 'createdAt',
+        header: 'Created At',
+        cell: ({ getValue }) => {
+          const raw = getValue();
+          if (!raw) return '-';
+
+          const date = new Date(raw);
+          if (isNaN(date.getTime())) return '-';
+          
+          return date.toLocaleString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }).replace(' pukul ', ' ');
+        }
+      },
+      {
+        accessorKey: 'updatedAt',
         header: 'Last Modified',
+        cell: ({ getValue }) => {
+          const raw = getValue();
+          if (!raw || typeof raw !== 'string' || raw.trim() === '') return '-';
+
+          const date = new Date(raw);
+          if (isNaN(date.getTime()) || date.getFullYear() < 2000) return '-';
+
+          return date.toLocaleString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }).replace(' pukul ', ' ');
+        }
       },
       {
         id: 'actions',
         accessorKey: 'actions',
         header: 'Action',
-        cell: () => (
+        cell: (row) => (
           <div className="flex items-center space-x-2">
-            <Button size="xs" variant="info">
+            <Button size="xs" variant="info" onClick={() => onShowDetail(row.row.original)}>
               <FaCircleInfo />
             </Button>
-            <Button size="xs" variant="warning">
+            <Button size="xs" variant="warning" onClick={() => onEdit(row.row.original)}>
               <BiSolidEditAlt />
             </Button>
-            <Button size="xs" variant="danger">
+            <Button size="xs" variant="danger" onClick={() => onDelete(row.row.original)}>
               <FaRegTrashAlt />
             </Button>
           </div>
@@ -136,6 +207,16 @@ export default function TableEmailTemplates() {
     getSortedRowModel: getSortedRowModel(),
     onPaginationChange: setPagination, 
   });
+
+  useEffect(() => {
+    fetchData();
+  }, [reloadTrigger]);
+
+  useEffect(() => {
+  if (reloadTrigger && reloadTrigger > 0) {
+    fetchData();
+  }
+  }, [reloadTrigger]);
 
   return (
     <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] dark:border-gray-800 dark:border-1 border-gray-200 border-1">
@@ -195,13 +276,13 @@ export default function TableEmailTemplates() {
         </form>
       </div>
 
-      <div className="max-w-full overflow-x-auto">
+      <div className="max-w-full xl:overflow-x-hidden overflow-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
-                  const isSorted = header.column.getIsSorted();  // 'asc' | 'desc' | false
+                  const isSorted = header.column.getIsSorted();   // 'asc' | 'desc' | false
                   const canSort = header.column.getCanSort();
 
                   return (
@@ -235,7 +316,7 @@ export default function TableEmailTemplates() {
                                 ${isSorted === "desc"
                                   ? "text-gray-800"
                                   : "text-gray-300"
-                              }`}
+                                }`}
                             >
                               ▼
                             </span>
@@ -249,15 +330,25 @@ export default function TableEmailTemplates() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map(row => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    No data available
+                  </div>
+                </td>
+              </tr>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -341,6 +432,45 @@ export default function TableEmailTemplates() {
           </div>
         </div>
       </div>
+
+      {/* SHOW MODAL */}
+      <ShowEmailTemplateDetailModal 
+        isOpen={activeModal === 'detail'}
+        onClose={() => {
+          setActiveModal(null);
+          setSelectedEmailTemplate(null);
+        }}
+        emailTemplate={selectedEmailTemplate}
+      />
+
+      {/* EDIT MODAL */}
+      <EditEmailTemplateModal 
+        isOpen={activeModal === 'edit'}
+        onClose={() => {
+          setActiveModal(null);
+          setSelectedEmailTemplate(null);
+        }}
+        emailTemplate={selectedEmailTemplate}
+        onUserUpdated={() => {
+          fetchData()
+        }}     
+      />
+
+      {/* DELETE MODAL */}
+      <DeleteEmailTemplateModal 
+        isOpen={activeModal === 'delete'}
+        onClose={() => {
+          setActiveModal(null);
+          setSelectedEmailTemplate(null);
+        }}
+        emailTemplate={
+          selectedEmailTemplate
+        }
+        onEmailTemplateDeleted={() => {
+          fetchData();
+          if (onReload) onReload();
+        }}
+      />   
     </div>
   );
 }

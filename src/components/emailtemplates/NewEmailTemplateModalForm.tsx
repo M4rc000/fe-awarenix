@@ -6,45 +6,45 @@ import EmailBodyEditor from "./EmailBodyEditor";
 import { forwardRef, useImperativeHandle } from "react";
 import Swal from "../utils/AlertContainer";
 
-export type NewEmailTemplatesModalFormRef = {
-  submitEmailTemplates: () => Promise<EmailTemplate | null>;
+export type NewEmailTemplateModalFormRef = {
+  submitEmailTemplate: () => Promise<EmailTemplate | null>;
   emailtemplate: EmailTemplate | null;
 };
 
-type NewEmailTemplatesModalFormProps = {
+type NewEmailTemplateModalFormProps = {
   onSuccess?: () => void;
 };
 
 // Define user data structure
-type EmailTemplatesData = {
-  name: string;
-  sender: string;
+type EmailTemplateData = {
+  templateName: string;
+  envelopeSender: string;
   subject: string;
-  body: string;
+  bodyEmail: string;
 };
 
-const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, NewEmailTemplatesModalFormProps>(({ onSuccess }, ref) => {
-  const [emailtemplate, setEmailTemplate] = useState<EmailTemplatesData>({
-    name: "",
-    sender: "",
+const NewEmailTemplateModalForm = forwardRef<NewEmailTemplateModalFormRef, NewEmailTemplateModalFormProps>(({ onSuccess }, ref) => {
+  const [emailtemplate, setEmailTemplate] = useState<EmailTemplateData>({
+    templateName: "",
+    envelopeSender: "",
     subject: "",
-    body: "",
+    bodyEmail: "",
   });
   const [templateName, setTemplateName] = useState("Welcome Email");
   const [envelopeSender, setEnvelopeSender] = useState("team@company.com");
   const [subject, setSubject] = useState("Welcome to Our Platform!");
-  const [errors, setErrors] = useState<Partial<EmailTemplatesData>>({});
+  const [errors, setErrors] = useState<Partial<EmailTemplateData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // VALIDATION FUNCTION
   const validateForm = (): boolean => {
-    const newErrors: Partial<EmailTemplatesData> = {};
+    const newErrors: Partial<EmailTemplateData> = {};
 
-    if (!emailtemplate.name.trim()) {
-      newErrors.name = "Name is required";
+    if (!emailtemplate.templateName.trim()) {
+      newErrors.templateName = "Name is required";
     }
-    if (!emailtemplate.sender.trim()) {
-      newErrors.sender = "Envelope Sender is required";
+    if (!emailtemplate.envelopeSender.trim()) {
+      newErrors.envelopeSender = "Envelope Sender is required";
     }
     if (!emailtemplate.subject.trim()) {
       newErrors.subject = "Subject Email is required";
@@ -54,24 +54,33 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
     return Object.keys(newErrors).length === 0;
   };
 
-  const submitEmailTemplates = async (): Promise<boolean> => {
+  const submitEmailTemplate = async (): Promise<boolean> => {
     // CEK VALIDASI
     if (!validateForm()) {
       return false;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const API_URL = import.meta.env.VITE_API_URL;
       const token = localStorage.getItem("token");
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      const createdBy = userData?.id || 0; 
       const response = await fetch(`${API_URL}/email-template/create`, {
         method: 'POST',
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        body: JSON.stringify(emailtemplate),
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          templateName: templateName,
+          envelopeSender: envelopeSender,
+          subject: subject,
+          bodyEmail: emailtemplate.bodyEmail || "",
+          createdAt: new Date().toISOString(),
+          createdBy: createdBy,
+        }),
       });
 
 
@@ -100,17 +109,17 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
       Swal.fire({
         text: "Email Template successfully added!",
         icon: "success",
-        duration: 3000
+        duration: 2500
       });
 
       if (onSuccess) onSuccess(); 
 
       // Reset form on success
       setEmailTemplate({
-        name: "",
-        sender: "",
+        templateName: "",
+        envelopeSender: "",
         subject: "",
-        body: "",
+        bodyEmail: "",
       });
       setErrors({});
       
@@ -124,11 +133,11 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
         // Cek jika error terkait network
         if (error.message.includes('fetch')) {
           setErrors({
-            name: 'Connection error. Please check if server is running.',
+            templateName: 'Connection error. Please check if server is running.',
           });
         } else if (error.message.toLowerCase().includes('sender')) {
           setErrors({
-            sender: error.message,
+            envelopeSender: error.message,
           });
         } else if (error.message.toLowerCase().includes('subject')) {
           setErrors({
@@ -137,7 +146,7 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
         }
          else {
           setErrors({
-            name: error.message,
+            templateName: error.message,
           });
         }
       }
@@ -149,12 +158,10 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
   };
 
   // Expose methods to parent component
-  useImperativeHandle(ref, () => ({
-    submitEmailTemplates,
-  }));
+  useImperativeHandle(ref, () => ({ submitEmailTemplate }));
 
   // Handle input changes - dengan safety check
-  const handleInputChange = (field: keyof EmailTemplatesData, value: string) => {
+  const handleInputChange = (field: keyof EmailTemplateData, value: string) => {
     // Prevent submit trigger dari input change
     if (isSubmitting) {
       // console.log('Ignoring input change during submission');
@@ -182,6 +189,10 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
         templateName={templateName}
         envelopeSender={envelopeSender}
         subject={subject}
+        onBodyChange={(html) => {
+          handleInputChange("bodyEmail", html);
+          setEmailTemplate(prev => ({ ...prev, bodyEmail: html })); // <-- ini penting
+        }}
       />,
     },
   ];
@@ -198,16 +209,17 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
             <Input 
               placeholder="Welcome Email" 
               type="text" 
-              value={templateName} 
+              value={emailtemplate.templateName} 
               onChange={(e) => {
                 setTemplateName(e.target.value);
-                handleInputChange('name', e.target.value)
+                handleInputChange('templateName', e.target.value)
               }}
+              required
               disabled={isSubmitting}
-              className={`w-full text-sm sm:text-base h-10 px-3 ${errors.name ? 'border-red-500': ''}`}
+              className={`w-full text-sm sm:text-base h-10 px-3 ${errors.templateName ? 'border-red-500': ''}`}
               />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              {errors.templateName && (
+                <p className="text-red-500 text-sm mt-1">{errors.templateName}</p>
               )}
           </div>
           <div>
@@ -215,23 +227,34 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
             <Input 
               placeholder="team@company.com" 
               type="email" 
-              value={envelopeSender} 
-              onChange={(e) => setEnvelopeSender(e.target.value)}
-              className={`w-full text-sm sm:text-base h-10 px-3 ${errors.sender ? 'border-red-500' : ''}`}
-            />
-              {errors.sender && (
-                <p className="text-red-500 text-sm mt-1">{errors.sender}</p>
+              value={emailtemplate.envelopeSender} 
+              onChange={(e) => {
+                setEnvelopeSender(e.target.value)
+                handleInputChange('envelopeSender', e.target.value)
+              }}
+              required
+              className={`w-full text-sm sm:text-base h-10 px-3 ${errors.envelopeSender ? 'border-red-500' : ''}`}
+              />
+              {errors.envelopeSender && (
+                <p className="text-red-500 text-sm mt-1">{errors.envelopeSender}</p>
               )}
           </div>
           <div>
             <Label>Subject Line</Label>
             <Input 
               placeholder="Welcome to Our Platform!" 
-              type="text" 
-              value={subject} 
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full text-sm sm:text-base h-10 px-3"
+              type="text"
+              required 
+              value={emailtemplate.subject} 
+              onChange={(e) => {
+                setSubject(e.target.value)
+                handleInputChange('subject', e.target.value)
+              }} 
+              className={`w-full text-sm sm:text-base h-10 px-3 ${errors.subject ? 'border-red-500' : ''}`}
             />
+            {errors.subject && (
+              <p className="text-red-500 text-sm mt-1">{errors.subject}</p>
+            )}
           </div>
         </div>
       </div>
@@ -241,4 +264,4 @@ const NewEmailTemplatesModalForm = forwardRef<NewEmailTemplatesModalFormRef, New
   );
 });
 
-export default NewEmailTemplatesModalForm;
+export default NewEmailTemplateModalForm;

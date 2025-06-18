@@ -3,29 +3,32 @@ import Button from "../../components/ui/button/Button";
 import NewUserModal from "../../components/usersgroups/NewUserModal";
 import TableUsers from "../../components/usersgroups/TableUsers";
 
-export default function ManageUser() {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [reloadTrigger, setReloadTrigger] = useState(0);
+type Props = {
+  reloadTrigger: number;
+  onReload: () => void;
+};
 
-    const fetchData = () => {
-        // Ubah state agar TableUsers ter-trigger re-fetch
-        setReloadTrigger(prev => {
-            const newValue = prev + 1;
-            return newValue;
-        });
-    }
+export default function ManageUser({ reloadTrigger, onReload }: Props) {
+  const [modalOpen, setModalOpen] = useState(false);
 
-    return (
-        <div className="">
-            <Button className="text-md mt-2 mb-3" onClick={()=> setModalOpen(true)}>New User</Button>
-            <TableUsers 
-                reloadTrigger={reloadTrigger} // Pass trigger untuk re-fetch
-            />
-            <NewUserModal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                onUserAdded={fetchData} 
-            />
-        </div>
-    );
+  const fetchData = () => {
+    // Trigger re-fetch via parent handler
+    onReload();
+  };
+
+  return (
+    <div className="">
+      <Button className="text-md mt-2 mb-3" onClick={() => setModalOpen(true)}>
+        New User
+      </Button>
+
+      <TableUsers reloadTrigger={reloadTrigger} onReload={fetchData}/>
+
+      <NewUserModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onUserAdded={fetchData}
+      />
+    </div>
+  );
 }
