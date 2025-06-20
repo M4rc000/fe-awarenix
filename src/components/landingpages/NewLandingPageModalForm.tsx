@@ -11,9 +11,7 @@ export default function NewLandingPageModalForm() {
   const emailTabs = [
     {
       label: "📝 Page Body",
-      content: <LandingPageBodyEditor 
-        templateName={templateName}
-      />,
+      content: <LandingPageBodyEditor />,
     },
   ];
 

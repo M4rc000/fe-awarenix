@@ -2,6 +2,8 @@ import { forwardRef, useState, useImperativeHandle } from "react";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Swal from "../utils/AlertContainer";
+import LabelWithTooltip from "../ui/tooltip/Tooltip";
+import Select from "../form/Select";
 
 export type NewUserModalFormRef = {
   submitUsers: () => Promise<User | null>;
@@ -17,8 +19,21 @@ type UserData = {
   name: string;
   email: string;
   position: string;
+  role: string;
+  company: string;
   password: string;
+  isActive: string;
 };
+
+const statusOption = [
+  { value: "0", label: "Not Active"},
+  { value: "1", label: "Active"}
+];
+
+const roleOption = [
+  { value: "Admin", label: "Admin"},
+  { value: "Member", label: "Member"}
+];
 
 const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(({ onSuccess }, ref) => {
   const [user, setUser] = useState<UserData>({
@@ -26,9 +41,12 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
     email: "",
     position: "",
     password: "",
+    role: "",
+    company: "",
+    isActive: "0",
   });
 
-  const [errors, setErrors] = useState<Partial<UserData>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof UserData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Validation function
@@ -47,6 +65,10 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
 
     if (!user.position.trim()) {
       newErrors.position = "Position is required";
+    }
+
+    if (!user.role.trim()) {
+      newErrors.role = "Role is required";
     }
 
     if (!user.password) {
@@ -77,18 +99,19 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
       const response = await fetch(`${API_URL}/users/register`, {
         method: 'POST',
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: user.name,
           email: user.email,
           position: user.position,   
+          role: user.role,   
+          isActive: user.isActive,   
           password: user.password,    
           createdBy: createdBy
         }),
       });
-
 
       if (!response.ok) {
         let errorMessage = 'Failed to create user';
@@ -99,7 +122,13 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
         if (contentType && contentType.includes('application/json')) {
           try {
             const errorData = await response.json();
-            errorMessage = errorData.message || errorData.error || errorMessage;
+              if (errorData.status === "error") {
+                // SET ERRORS KE FORM FIELD JIKA ADA
+                if (errorData.fields && typeof errorData.fields === "object") {
+                  setErrors(errorData.fields);
+                }
+                errorMessage = errorData.message || "Something went wrong";
+              }
           } catch (jsonError) {
             console.error('Failed to parse JSON error:', jsonError);
             errorMessage = `Server error: ${response.status} ${response.statusText}`;
@@ -113,7 +142,6 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
       }
 
       Swal.fire({
-        // title: "Success",
         text: "User successfully added!",
         icon: "success",
         duration: 3000
@@ -127,6 +155,9 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
         email: "",
         position: "",
         password: "",
+        role: "",
+        company: "",
+        isActive: "0",
       });
       setErrors({});
       
@@ -166,11 +197,8 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
 
   // Handle input changes - dengan safety check
   const handleInputChange = (field: keyof UserData, value: string) => {
-    // console.log(`Input changed - ${field}:`, value);
-    
     // Prevent submit trigger dari input change
     if (isSubmitting) {
-      // console.log('Ignoring input change during submission');
       return;
     }
     
@@ -197,15 +225,16 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
     <form onSubmit={handleFormSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="rounded-xl">
-          <div className="space-y-3">
+          <div className="space-y-3 grid grid-cols-1 xl:grid-cols-2 gap-3">
             <div>
-              <Label>Name</Label>
+              <Label required>Name</Label>
               <Input
                 placeholder="Name"
                 value={user.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 disabled={isSubmitting}
                 className={errors.name ? 'border-red-500' : ''}
+                required
               />
               {errors.name && (
                 <p className="text-red-500 text-sm mt-1">{errors.name}</p>
@@ -213,7 +242,7 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
             </div>
 
             <div>
-              <Label>Email</Label>
+              <Label required>Email</Label>
               <Input
                 placeholder="Email"
                 type="email"
@@ -221,6 +250,7 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 disabled={isSubmitting}
                 className={errors.email ? 'border-red-500' : ''}
+                required
               />
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -228,13 +258,14 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
             </div>
 
             <div>
-              <Label>Position</Label>
+              <LabelWithTooltip tooltip="Position on user's company" required>Position</LabelWithTooltip>
               <Input
                 placeholder="Position"
                 value={user.position}
                 onChange={(e) => handleInputChange('position', e.target.value)}
                 disabled={isSubmitting}
                 className={errors.position ? 'border-red-500' : ''}
+                required
               />
               {errors.position && (
                 <p className="text-red-500 text-sm mt-1">{errors.position}</p>
@@ -242,7 +273,20 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
             </div>
 
             <div>
-              <Label>Password</Label>
+              <LabelWithTooltip tooltip="Role on this system" required>Role</LabelWithTooltip>
+              <Select
+                value={user.role}
+                  options={roleOption}
+                  onChange={(val) => handleInputChange('role', val)} 
+                  required
+              />
+              {errors.role && (
+                <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+              )}
+            </div>
+            
+            <div>
+              <Label required>Password</Label>
               <Input
                 placeholder="Password"
                 type="password"
@@ -250,10 +294,21 @@ const NewUserModalForm = forwardRef<NewUserModalFormRef, NewUserModalFormProps>(
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 disabled={isSubmitting}
                 className={errors.password ? 'border-red-500' : ''}
+                required
               />
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
               )}
+            </div>
+
+            <div>
+              <LabelWithTooltip tooltip="Status means active or not for user" required>Status</LabelWithTooltip>
+              <Select
+                value={user.isActive}
+                options={statusOption}
+                onChange={(val) => handleInputChange('isActive', val)}
+                required
+              />
             </div>
           </div>
         </div>

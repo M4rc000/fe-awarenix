@@ -1,17 +1,24 @@
+import { ReactNode } from "react";
 import { Link } from "react-router";
 
 interface BreadcrumbProps {
+  menu: string;
   pageTitle: string;
+  icon:ReactNode;
 }
 
-const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
+const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ menu, pageTitle, icon }) => {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
       <h2
-        className="text-xl font-semibold text-gray-800 dark:text-white/90"
-        x-text="pageName"
-      >
-        {pageTitle}
+        className="text-xl flex font-semibold text-gray-800 dark:text-white/90"
+        x-text="pageName">
+        <span className="mt-1">
+          {icon} 
+        </span>
+        <span className="ml-2">
+          {pageTitle}
+        </span>
       </h2>
       <nav>
         <ol className="flex items-center gap-1.5">
@@ -20,7 +27,7 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
               className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
               to="/"
             >
-              Home
+              {menu}
               <svg
                 className="stroke-current"
                 width="17"

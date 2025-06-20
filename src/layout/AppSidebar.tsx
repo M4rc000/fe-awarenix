@@ -15,8 +15,10 @@ import {
   TableIcon,
   UserIcon,
 } from "../icons";
+import { IoFootstepsOutline } from "react-icons/io5";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
+import { User } from "lucide-react";
 
 type SubItem = {
   name: string;
@@ -40,7 +42,7 @@ type NavGroup = {
 
 const navGroups: NavGroup[] = [
   {
-    title: "Admin",
+    title: "Super Admin",
     key: "main",
     items: [
       {
@@ -52,6 +54,52 @@ const navGroups: NavGroup[] = [
         icon: <CalenderIcon />,
         name: "Campaigns",
         path: "/campaigns",
+      },
+      {
+        icon: <User />,
+        name: "User Management",
+        path: "/user-management",
+      },
+      {
+        icon: <GroupIcon />,
+        name: "Users & Groups",
+        path: "/users-groups",
+      },
+      {
+        icon: <MailIcon />,
+        name: "Email Templates",
+        path: "/email-templates",
+      },
+      {
+        icon: <TableIcon />,
+        name: "Landing Pages",
+        path: "/landing-pages",
+      },
+      {
+        icon: <UserIcon />,
+        name: "Sending Profiles",
+        path: "/sending-profiles",
+      },
+    ],
+  },
+  {
+    title: "Admin",
+    key: "admin",
+    items: [
+      {
+        icon: <GridIcon />,
+        name: "Dashboard",
+        path: "/dashboard",
+      },
+      {
+        icon: <CalenderIcon />,
+        name: "Campaigns",
+        path: "/campaigns",
+      },
+      {
+        icon: <User />,
+        name: "User Management",
+        path: "/user-management",
       },
       {
         icon: <GroupIcon />,
@@ -109,6 +157,17 @@ const navGroups: NavGroup[] = [
         icon: <FaMoneyCheckAlt />,
         name: "Subcription & Billing",
         path: "/subscription-billing",
+      },
+    ],
+  },
+  {
+    title: "Support",
+    key: "support",
+    items: [
+      {
+        icon: <IoFootstepsOutline />,
+        name: "Monitoring Log",
+        path: "/monitoring-log",
       },
     ],
   },
@@ -343,7 +402,7 @@ const AppSidebar: React.FC = () => {
             {navGroups.map((group) => (
               <div key={group.title}>
                 <h2
-                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-600 font-semibold dark:text-gray-500 ${
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-900 font-semibold dark:text-gray-500 ${
                     !isExpanded && !isHovered
                       ? "lg:justify-center"
                       : "justify-start"

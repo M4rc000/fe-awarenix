@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { FaPage4, FaPager } from "react-icons/fa";
+import { FaPager } from "react-icons/fa";
+import Swal from "sweetalert2";
 
-const LandingPageBodyEditor = ({ templateName, envelopeSender, subject }) => {
+const LandingPageBodyEditor = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [htmlContent, setHtmlContent] = useState(`<!DOCTYPE html>
 <html>
@@ -11,83 +12,62 @@ const LandingPageBodyEditor = ({ templateName, envelopeSender, subject }) => {
     <title>Landing Page Template</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4;">
-        <tr>
-            <td align="center" style="padding: 20px 0;">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <!-- Header -->
-                    <tr>
-                        <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">
-                                Welcome to Our Platform!
-                            </h1>
-                        </td>
-                    </tr>
-                    
-                    <!-- Content -->
-                    <tr>
-                        <td style="padding: 40px 30px;">
-                            <h2 style="color: #333333; margin: 0 0 20px 0; font-size: 24px;">
-                                Hello There! 👋
-                            </h2>
-                            
-                            <p style="color: #666666; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">
-                                Thank you for joining our community. We're excited to have you on board and can't wait for you to explore all the amazing features we have prepared for you.
-                            </p>
-                            
-                            <!-- Feature Box -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f9fa; border-radius: 6px; margin: 25px 0;">
-                                <tr>
-                                    <td style="padding: 20px;">
-                                        <h3 style="color: #333333; margin: 0 0 10px 0; font-size: 18px;">
-                                            🚀 What's Next?
-                                        </h3>
-                                        <ul style="color: #666666; margin: 0; padding-left: 20px; line-height: 1.8;">
-                                            <li>Complete your profile setup</li>
-                                            <li>Explore our dashboard</li>
-                                            <li>Connect with other users</li>
-                                            <li>Start your first project</li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <!-- CTA Button -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
-                                <tr>
-                                    <td align="center">
-                                        <a href="#" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 15px 30px; border-radius: 6px; font-weight: bold; font-size: 16px; box-shadow: 0 3px 6px rgba(0,0,0,0.1);">
-                                            Get Started Now
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <p style="color: #666666; line-height: 1.6; margin: 20px 0 0 0; font-size: 14px;">
-                                If you have any questions, our support team is here to help. Just login to this page or visit our help center.
-                            </p>
-                        </td>
-                    </tr>
-                    
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color: #f8f9fa; padding: 20px 30px; text-align: center; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
-                            <p style="color: #999999; margin: 0; font-size: 12px; line-height: 1.4;">
-                                © 2025 Your Company Name. All rights reserved.<br>
-                                123 Business Street, City, State 12345<br>
-                                <a href="#" style="color: #667eea; text-decoration: none;">Unsubscribe</a> | 
-                                <a href="#" style="color: #667eea; text-decoration: none;">Privacy Policy</a>
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
+    </body>
 </html>`);
 
   const tabs = ["HTML Editor", "Live Preview"];
+
+  const handleImportSite = async () => {
+    const { value: url } = await Swal.fire({
+      title: "Import Site",
+      input: "url",
+      inputLabel: "Enter a URL to import HTML",
+      inputPlaceholder: "https://example.com",
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return 'You need to enter a URL!';
+        }
+        try {
+          new URL(value); // Validasi format URL dasar
+        } catch (_) {
+          return 'Please enter a valid URL!';
+        }
+        return null;
+      }
+    });
+
+    if (!url) return;
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem('token');
+
+      const res = await fetch(`${API_URL}/landing-page/clone-site`, { // Ubah URL: tidak perlu query param
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        method: 'POST', // UBAH MENJADI POST
+        body: JSON.stringify({ // Kirim data di body sebagai JSON
+          url: url,
+          include_resources: false // Sesuai dengan logika gophish
+        })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to fetch site");
+      }
+
+      const data = await res.json();
+      setHtmlContent(data.html);
+      Swal.fire("Success", "Site imported successfully!", "success"); // Tambahkan notifikasi sukses
+    } catch (err: any) {
+      Swal.fire("Error", err.message || "Failed to import site", "error");
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg">
@@ -110,22 +90,26 @@ const LandingPageBodyEditor = ({ templateName, envelopeSender, subject }) => {
 
       <div className="border border-gray-200 dark:border-gray-700 rounded-b-xl min-h-[500px]">
         {activeTab === 0 ? (
-          // HTML Editor Tab
           <div className="p-4 h-full">
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-4 flex justify-between items-center">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Edit HTML Landing Page Template:
               </label>
-              <textarea
-                value={htmlContent}
-                onChange={(e) => setHtmlContent(e.target.value)}
-                className="w-full h-96 p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-xs resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Masukkan HTML content di sini..."
-              />
+              <button
+                onClick={handleImportSite}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs"
+              >
+                🌐 Import Site
+              </button>
             </div>
-            
-            {/* Quick Insert Buttons */}
-            <div className="flex flex-wrap gap-2 mb-4">
+            <textarea
+              value={htmlContent}
+              onChange={(e) => setHtmlContent(e.target.value)}
+              className="w-full h-96 p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-xs resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Masukkan HTML content di sini..."
+            />
+
+            <div className="flex flex-wrap gap-2 mb-4 mt-4">
               <button
                 onClick={() => setHtmlContent(prev => prev + '\n<p style="color: #666; margin: 10px 0;">New paragraph</p>')}
                 className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
@@ -162,19 +146,16 @@ const LandingPageBodyEditor = ({ templateName, envelopeSender, subject }) => {
             </div>
           </div>
         ) : (
-          // Live Preview Tab
           <div className="p-4 h-full">
-            {/* Landing Page Header Info */}
             <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">
               <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                 <strong className="flex"><FaPager className="mt-[3px] mr-2"/> Landing Page Preview</strong>
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-500 space-y-1">
-                <div><strong>Template:</strong> {templateName || "Welcome to Landing Page"}</div>
+                <div><strong>Template:</strong></div>
               </div>
             </div>
-            
-            {/* Live Preview */}
+
             <div className="border border-gray-300 dark:border-gray-600 rounded-lg bg-white min-h-[400px] overflow-auto">
               {htmlContent ? (
                 <iframe
@@ -190,8 +171,7 @@ const LandingPageBodyEditor = ({ templateName, envelopeSender, subject }) => {
                 </div>
               )}
             </div>
-            
-            {/* Preview Notes */}
+
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <div className="text-xs text-blue-700 dark:text-blue-300">

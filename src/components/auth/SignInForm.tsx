@@ -5,7 +5,7 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
-import ModernAlert from "../ui/alert/ModernAlert";
+import { useUserSession } from "../context/UserSessionContext";
 
 type LoginErrors = {
   email?: string;
@@ -21,6 +21,8 @@ export default function SignInForm() {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useUserSession();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +64,7 @@ export default function SignInForm() {
       localStorage.setItem("token", body.token);
       localStorage.setItem("token_expired", body.expires_at);
       localStorage.setItem("user", JSON.stringify(body.user));
-
+      setUser(body.user);
       navigate('/dashboard');
     } catch (err: any) {
       console.error(err);
@@ -141,12 +143,12 @@ export default function SignInForm() {
                   Keep me logged in
                 </span>
               </div>
-              <Link
+              {/* <Link
                 to="/reset-password"
                 className="text-sm text-brand-500 hover:text-brand-600"
               >
                 Forgot password?
-              </Link>
+              </Link> */}
             </div>
 
             {/* Submit */}

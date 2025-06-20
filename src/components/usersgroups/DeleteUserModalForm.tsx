@@ -23,12 +23,7 @@ type DeleteUserModalFormProps = {
 const DeleteUserModalForm = forwardRef<DeleteUserModalFormRef, DeleteUserModalFormProps>(
   ({ user, error, isDeleting, onDelete }, ref) => {
     useImperativeHandle(ref, () => ({
-      // submitDelete: () => {
-      //   onDelete();
-      //   return true;
-      // },
       submitDelete: async () => {
-        console.log('submitDelete triggered');
         await onDelete();
         return true;
       }
@@ -44,7 +39,7 @@ const DeleteUserModalForm = forwardRef<DeleteUserModalFormRef, DeleteUserModalFo
           <Input 
             type="text"  
             value={user.name}
-            disabled
+            readonly
             className="w-full text-sm sm:text-base h-10 px-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
           />
         </div>
@@ -55,7 +50,7 @@ const DeleteUserModalForm = forwardRef<DeleteUserModalFormRef, DeleteUserModalFo
           <Input 
             type="email"  
             value={user.email}
-            disabled
+            readonly
             className="w-full text-sm sm:text-base h-10 px-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
           />
         </div>
@@ -66,7 +61,7 @@ const DeleteUserModalForm = forwardRef<DeleteUserModalFormRef, DeleteUserModalFo
           <Input 
             type="text"  
             value={user.position}
-            disabled
+            readonly
             className="w-full text-sm sm:text-base h-10 px-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
           />
         </div>
@@ -75,7 +70,7 @@ const DeleteUserModalForm = forwardRef<DeleteUserModalFormRef, DeleteUserModalFo
       </div>
     );
   }
-); // ✅ penutup forwardRef
+);
 
 DeleteUserModalForm.displayName = "DeleteUserModalForm";
 

@@ -1,6 +1,6 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import SessionChecker from "./SessionChecker"; // Komponen loading minimal
+import SessionChecker from "./SessionChecker";
 
 function isTokenValid(token: string | null): boolean {
   if (!token) return false;
@@ -9,31 +9,23 @@ function isTokenValid(token: string | null): boolean {
     const payload = JSON.parse(atob(payloadBase64));
     const now = Math.floor(Date.now() / 1000);
     return payload.exp && payload.exp > now;
-  } catch (err) {
-    console.log("Token parsing error:", err);
+  } catch {
     return false;
   }
 }
 
-export default function ProtectedRoute() {
+export default function PublicRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    if (isTokenValid(token)) {
-      setAuthorized(true);
-    } else {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      setAuthorized(false);
-    }
-
+    const isValid = isTokenValid(token);
+    if (isValid) setShouldRedirect(true);
     setChecking(false);
   }, []);
 
   if (checking) return <SessionChecker />;
-
-  return authorized ? <Outlet /> : <Navigate to="/login" replace />;
+  if (shouldRedirect) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
 }

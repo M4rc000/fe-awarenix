@@ -6,7 +6,7 @@ interface BreadcrumpProps {
   className?: string;
 }
 
-export default function Breadcrupm({ title, icon, className = "" }: BreadcrumpProps) {
+export default function Breadcrump({ title, icon, className = "" }: BreadcrumpProps) {
   return (
     <h3 className={`flex items-center text-xl font-bold mb-5 dark:text-white ${className}`}>
       <span className="mr-2 dark:text-white">{icon}</span>

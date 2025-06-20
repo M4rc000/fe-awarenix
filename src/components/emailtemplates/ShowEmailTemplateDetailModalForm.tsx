@@ -1,7 +1,7 @@
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Tabs from "../common/Tabs";
-import EmailBodyEditor from "./EmailBodyEditor";
+import EmailBodyEditor from "./EmailBodyEditorTemplate";
 
 export type ShowEmailTemplateDetailModalFormRef = {
   submitEmailTemplates: () => Promise<EmailTemplate | null>;

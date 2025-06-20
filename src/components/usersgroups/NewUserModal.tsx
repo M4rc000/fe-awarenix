@@ -76,7 +76,7 @@ export default function NewUserModal({
               onClick={(e) => e.stopPropagation()}
             >
               {/* HEADER */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-b-gray-300 dark:border-b-gray-600 flex-shrink-0">
                 <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   New User
                 </DialogTitle>
@@ -100,7 +100,7 @@ export default function NewUserModal({
                 <button
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-200 dark:text-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>

@@ -16,6 +16,9 @@ import LandingPages from "./pages/LandingPages/LandingPages";
 import PhishingEmail from "./pages/PhisingEmail/PhisingEmail";
 import { AlertContainer } from "./components/utils/AlertContainer";
 import AuthWatcher from "./components/utils/AuthWatcher";
+import { UserSessionProvider } from "./components/context/UserSessionContext";
+import PublicRoute from "./components/utils/PublicRoute";
+import UserManagement from "./pages/UserManagement/UserManagement";
 
 export default function App() {
   return (
@@ -24,34 +27,46 @@ export default function App() {
         <title>Awarenix - i3</title>
       </Helmet>
       <Router>
-        <ScrollToTop />
-        <AuthWatcher />
-        <Routes>
-          {/* Dashboard Layout */}
-          <Route element={<ProtectedRoute/>}>
-            <Route element={<AppLayout />}>
-              {/* ADMIN */}
-              <Route index path="/dashboard" element={<Dashboard />} />
-              <Route path="/campaigns" element={<Campaigns />} />
-              <Route path="/users-groups" element={<UsersGroups/>} />
-              <Route path="/email-templates" element={<EmailTemplates />} />
-              <Route path="/sending-profiles" element={<SendingProfiles />} />
-              <Route path="/landing-pages" element={<LandingPages />} />
-
-              {/* PHISING & SIMULATION */}
-              <Route path="/phising-emails" element={<PhishingEmail />} />
+        <UserSessionProvider>
+          <ScrollToTop />
+          <AuthWatcher />
+          <Routes>
+            {/* Protected Routes (di dalam layout) */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route index path="/dashboard" element={<Dashboard />} />
+                <Route path="/campaigns" element={<Campaigns />} />
+                <Route path="/user-management" element={<UserManagement />} />
+                <Route path="/users-groups" element={<UsersGroups />} />
+                <Route path="/email-templates" element={<EmailTemplates />} />
+                <Route path="/sending-profiles" element={<SendingProfiles />} />
+                <Route path="/landing-pages" element={<LandingPages />} />
+                <Route path="/phising-emails" element={<PhishingEmail />} />
+              </Route>
             </Route>
-          </Route>
 
-          {/* Auth Layout */}
-          <Route path="/" element={<SignIn />} />
-          <Route path="/login" element={<SignIn />} />
-          <Route path="/register" element={<SignUp />} />
-          <Route path="/reset-password" element={<ForgotPassword />} />
+            {/* Auth Routes */}
+            <Route path="/" element={
+                <PublicRoute>
+                  <SignIn />
+                </PublicRoute>
+              } />
+              <Route path="/login" element={
+                <PublicRoute>
+                  <SignIn />
+                </PublicRoute>
+              } />
+              <Route path="/register" element={
+                <PublicRoute>
+                  <SignUp />
+                </PublicRoute>
+              } />
+              <Route path="/reset-password" element={<ForgotPassword />} />
 
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            {/* Fallback */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </UserSessionProvider>
       </Router>
       <AlertContainer />
     </>

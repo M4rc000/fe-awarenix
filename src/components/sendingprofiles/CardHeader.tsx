@@ -4,13 +4,17 @@ import { CgArrowsExchange } from "react-icons/cg";
 import { TfiEmail } from "react-icons/tfi";
 import Badge from "../ui/badge/Badge";
 
-export default function CardHeader() {
+export type CardHeaderSendingProfilesProps = {
+  reloadTrigger: number
+}
+
+export default function CardHeader({reloadTrigger}: CardHeaderSendingProfilesProps) {
   const [totalSendingProfiles, setTotalSendingProfiles] = useState(0);
-  const [growthDataSendingProfiles, setGrowthDataSendingProfiles] = useState(null);
+  const [growthDataSendingProfiles, setGrowthDataSengrowthDataSendingProfiles] = useState(null);
 
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL;
-    const fetchTotal = async () => {
+    const fetchTotalSendingProfiles = async () => {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(`${API_URL}/sending-profile/all`, {
@@ -23,34 +27,41 @@ export default function CardHeader() {
           setTotalSendingProfiles(data.Total);
         }
       } catch (err) {
-        console.error("❌ Failed to fetch total sending profiles:", err);
+        console.error("Failed to fetch total groups:", err);
       }
     };
-
-    fetchTotal();
-  }, []);
-
+    
+    fetchTotalSendingProfiles();
+  }, [reloadTrigger]);
+  
   useEffect(() => {
-    const API_URL = import.meta.env.VITE_API_URL;
     const token = localStorage.getItem("token");
-
-    fetch(`${API_URL}/analytics/growth-percentage?type=sendingprofiles`, {
+    const API_URL = import.meta.env.VITE_API_URL;
+    fetch(`${API_URL}/analytics/growth-percentage?type=groups`, {
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
     })
       .then(res => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        // Check if response is ok
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         return res.json();
       })
       .then(data => {
         if (data.success && data.data) {
-          setGrowthDataSendingProfiles(data.data);
+          setGrowthDataSengrowthDataSendingProfiles(data.data);
+        } else {
+          console.warn("⚠️ No data received or success = false");
         }
       })
       .catch(error => {
-        console.error("❌ Error fetching growth data:", error);
+        console.error("❌ Fetch error:", error);
+        console.error("🔍 Error details:", error.message);
       });
   }, []);
 

@@ -27,17 +27,23 @@ import ShowUserDetailModal from './ShowUserDetailModal';
 import EditUserModal from './EditUserModal';
 import DeleteUserModal from './DeleteUserModal';
 import Swal from '../utils/AlertContainer';
+import CustomSwal from 'sweetalert2';
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { IoCloseCircle } from "react-icons/io5";
 
 interface User {
   id: number;
   name: string;
   email: string;
   position: string;
+  role: string;
+  isActive: number;
   updated_at: string;
 }
 
 export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?: number, onReload?: () => void }){
   const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
@@ -88,9 +94,7 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
         text: 'Failed to load user data',
         duration: 2000,
         icon: "error"
-      });
-      
-      window.location.reload();
+      }); 
     }
   }; 
 
@@ -135,8 +139,21 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
         header: 'Email',
       },
       {
-        accessorKey: 'position',
-        header: 'Position',
+        accessorKey: 'role',
+        header: 'Role',
+        cell:({getValue})=>{
+          const raw = getValue();
+          if(!raw) return '-'
+          return raw;
+        }
+      },
+      {
+        accessorKey: 'isActive',
+        header: 'Status',
+        cell:({getValue})=>{
+          const raw = getValue();
+          return raw == true ? <IoIosCheckmarkCircle className='ml-2 w-5 h-4 ' color='green'/> : <IoCloseCircle className='ml-2 w-5 h-4 ' color='gray'/>;
+        }
       },
       {
         accessorKey: 'createdAt',
@@ -223,6 +240,7 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
     const token = localStorage.getItem("token");
     const API_URL = import.meta.env.VITE_API_URL;
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const res = await fetch(`${API_URL}/users/all`, {
           credentials: 'include',
@@ -238,6 +256,8 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
         setData(result.Data || result.data || result);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false); // SELESAI LOADING
       }
     };
 
@@ -301,7 +321,7 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
         </form>
       </div>
 
-      <div className="max-w-full overflow-x-auto">
+      <div className="max-w-full overflow-x-auto xl:overflow-x-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -355,7 +375,18 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length > 0 ? (
+            {isLoading ? (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+            ) : table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map(row => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map(cell => (

@@ -2,9 +2,20 @@ import { useState } from "react";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Tabs from "../common/Tabs";
-import EmailBodyEditor from "./EmailBodyEditor";
+import EmailBodyEditorTemplate from "./EmailBodyEditorTemplate";
+import EmailBodyEditorCustom from "./EmailBodyEditorCustom";
 import { forwardRef, useImperativeHandle } from "react";
 import Swal from "../utils/AlertContainer";
+import { LuLayoutTemplate } from "react-icons/lu";
+import { FcIdea } from "react-icons/fc";
+
+interface EmailTemplate{
+  id: number;
+  templateName: string;
+  envelopeSender: string;
+  subject: string;
+  updated_at: string;
+}
 
 export type NewEmailTemplateModalFormRef = {
   submitEmailTemplate: () => Promise<EmailTemplate | null>;
@@ -184,8 +195,30 @@ const NewEmailTemplateModalForm = forwardRef<NewEmailTemplateModalFormRef, NewEm
 
   const emailTabs = [
     {
-      label: "📝 Email Body",
-      content: <EmailBodyEditor 
+      label: (
+      <div className="flex items-center justify-center gap-2">
+        <LuLayoutTemplate />
+        <span>Template</span>
+      </div>
+      ), 
+      content: <EmailBodyEditorTemplate
+        templateName={templateName}
+        envelopeSender={envelopeSender}
+        subject={subject}
+        onBodyChange={(html) => {
+          handleInputChange("bodyEmail", html);
+          setEmailTemplate(prev => ({ ...prev, bodyEmail: html })); // <-- ini penting
+        }}
+      />,
+    },
+    {
+      label: (
+        <div className="flex items-center justify-center gap-2">
+          <FcIdea />
+          <span>Custom</span>
+        </div>
+      ), 
+      content: <EmailBodyEditorCustom 
         templateName={templateName}
         envelopeSender={envelopeSender}
         subject={subject}
@@ -198,7 +231,7 @@ const NewEmailTemplateModalForm = forwardRef<NewEmailTemplateModalFormRef, NewEm
   ];
 
   return (
-    <div className="space-y-6 p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="space-y-6 p-1 dark:bg-gray-900 min-h-screen">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
           📧 Email Configuration

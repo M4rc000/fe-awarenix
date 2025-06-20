@@ -3,13 +3,10 @@ import StatisticsChart from "../../components/campaigns/StatisticsChart";
 import MonthlyTarget from "../../components/campaigns/MonthlyTarget";
 import RecentOrders from "../../components/campaigns/RecentOrders";
 import DemographicCard from "../../components/campaigns/DemographicCard";
-import { GridIcon } from "../../icons";
-import Breadcrump from "../../components/utils/Breacrump";
 
 export default function Dashboard() {
   return (
     <>
-      <Breadcrump icon={<GridIcon/>} title="Dashboard" />
       <div className="grid grid-cols-12 gap-4 md:gap-6 mt-10">
         <div className="col-span-12 space-y-6 xl:col-span-7">
           <MonthlySalesChart />

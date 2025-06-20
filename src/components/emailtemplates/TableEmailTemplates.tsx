@@ -48,6 +48,8 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
   const [data, setData] = useState<EmailTemplate[]>([]);
   const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
   const [selectedEmailTemplate, setSelectedEmailTemplate] = useState<EmailTemplate | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -68,6 +70,7 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
   const API_URL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("token");
   const fetchData = async () => {
+    setIsLoading(true);
     try {
       const res = await fetch(`${API_URL}/email-template/all`, {
         credentials: 'include',
@@ -87,8 +90,8 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
         duration: 2000,
         icon: "error"
       });
-      
-      window.location.reload();
+    } finally {
+      setIsLoading(false);
     }
   }; 
 
@@ -276,13 +279,13 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
         </form>
       </div>
 
-      <div className="max-w-full xl:overflow-x-hidden overflow-auto">
+      <div className="max-w-full overflow-x-auto xl:overflow-x-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
-                  const isSorted = header.column.getIsSorted();   // 'asc' | 'desc' | false
+                  const isSorted = header.column.getIsSorted();  // 'asc' | 'desc' | false
                   const canSort = header.column.getCanSort();
 
                   return (
@@ -316,7 +319,7 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
                                 ${isSorted === "desc"
                                   ? "text-gray-800"
                                   : "text-gray-300"
-                                }`}
+                              }`}
                             >
                               ▼
                             </span>
@@ -330,7 +333,18 @@ export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length > 0 ? (
+            {isLoading ? (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+            ) : table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map(row => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map(cell => (

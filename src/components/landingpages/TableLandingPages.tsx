@@ -22,6 +22,15 @@ import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
+import Swal from '../utils/AlertContainer';
+
+interface LandingPage{
+  id: number;
+  name: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function TableLandingPages() {
   const [search, setSearch] = useState('');
@@ -31,8 +40,11 @@ export default function TableLandingPages() {
     pageSize: 10,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [data, setData] = useState<LandingPage[]>([]);
+  
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,31 +61,39 @@ export default function TableLandingPages() {
     };
   }, []);
 
-  interface LandingPages {
-    id: number;
-    name: string;
-    body: string;
-    lastModified: string;
-  }
+  // FETCH DATA
+  useEffect(()=>{
+    const API_URL = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("token");
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/email-template/all`, {
+          credentials: 'include',
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!res.ok) throw new Error('Failed to fetch data');
+  
+        const result = await res.json();
+        setData(result.Data || result.data || result);
+      } catch (err) {
+        Swal.fire({
+          text: 'Failed to load email template data',
+          duration: 2000,
+          icon: "error"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }; 
+    fetchData();
+  }, [])
 
-  const tableData: LandingPages[] = [
-    {
-      id: 1,
-      name: "Google Meet",
-      body: "",
-      lastModified: "01 March 2025",
-    },
-    {
-      id: 2,
-      name: "Zoom",
-      body: "",
-      lastModified: "01 March 2025",
-    },
-  ];
-
-  const data = useMemo(() => tableData, []);
-
-  const columns = useMemo<ColumnDef<LandingPages>[]>(
+  const columns = useMemo<ColumnDef<LandingPage>[]>(
     () => [
       {
         accessorKey: 'id',
@@ -89,8 +109,12 @@ export default function TableLandingPages() {
         header: 'Body',
       },
       {
-        accessorKey: 'lastModified',
-        header: 'Last Modified',
+        accessorKey: 'createdAt',
+        header: 'Created At',
+      },
+      {
+        accessorKey: 'updatedAt',
+        header: 'Updated At',
       },
       {
         id: 'actions',
@@ -189,7 +213,7 @@ export default function TableLandingPages() {
         </form>
       </div>
 
-      <div className="max-w-full overflow-x-auto">
+      <div className="max-w-full overflow-x-auto xl:overflow-x-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -214,7 +238,7 @@ export default function TableLandingPages() {
                         {flexRender(header.column.columnDef.header, header.getContext())}
 
                         {canSort && (
-                          <div className="mt-1 w-1 text-xs px-12">
+                          <div className="mt-1 w-1 text-xs">
                             <span
                               className={`
                                 ${isSorted === "asc"
@@ -243,7 +267,18 @@ export default function TableLandingPages() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length > 0 ? (
+            {isLoading ? (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+            ) : table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map(row => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map(cell => (

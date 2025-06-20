@@ -81,6 +81,7 @@ const ModernAlert = ({
       z-50
       dark:bg-white
       w-auto
+      min-w-52
       max-w-full
       pr-8
       shadow-lg 

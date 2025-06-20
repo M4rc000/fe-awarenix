@@ -1,30 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { useNavigate } from "react-router";
-
-type SessionUser = {
-  id:       number;
-  name:     string;
-  email:    string;
-  position: string;
-};
+import { useUserSession } from "../context/UserSessionContext";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser]   = useState<SessionUser | null>(null);
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    const raw = localStorage.getItem("user");
-    if (!raw) return;
-    try {
-      const parsed: SessionUser = JSON.parse(raw);
-      setUser(parsed);
-    } catch (err) {
-      console.error("Invalid user in localStorage", err);
-    }
-  }, []);
+  const { user, setUser } = useUserSession();
+
+  // useEffect(() => {
+  //   const fetchUserSession = async () => {
+  //     const token = localStorage.getItem("token");
+  //     const API_URL = import.meta.env.VITE_API_URL;
+  //     const raw = localStorage.getItem('user') || '';
+  //     const user_id = JSON.parse(raw).id;
+
+  //     if (!token || !raw) return;
+
+  //     try {
+  //       const res = await fetch(`${API_URL}/users/session`, {
+  //         method: 'POST',
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify({ user_id: user_id })
+  //       });
+
+  //       const result = await res.json();
+  //       if (result?.Success && result?.Data) {
+  //         // TIMPA LOCALSTORAGE USER
+  //         localStorage.setItem("user", JSON.stringify(result.Data));
+  //         setUser(result.Data);
+  //       }
+  //     } catch (err) {
+  //       console.error("Fetch user session failed:", err);
+  //     }
+  //   };
+
+  //   fetchUserSession();
+  // }, []);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);

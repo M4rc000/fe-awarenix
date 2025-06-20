@@ -6,7 +6,8 @@ import {
   getFilteredRowModel,
   flexRender,
   ColumnDef,
-  getSortedRowModel
+  getSortedRowModel,
+  CellContext
 } from '@tanstack/react-table';
 import {
   Table,
@@ -22,13 +23,26 @@ import { FaCircleInfo } from "react-icons/fa6";
 import Button from "../ui/button/Button";
 import type { SortingState } from '@tanstack/react-table';
 import { useSidebar } from "../../context/SidebarContext";
-import ShowGroupDetailModal from './ShowGroupDetailModal';
-import EditGroupModal from './EditGroupModal';
-import DeleteGroupModal from './DeleteGroupModal';
+import ShowUserDetailModal from './ShowUserDetailModal';
+import EditUserModal from './EditUserModal';
+import DeleteUserModal from './DeleteUserModal';
+import Swal from '../utils/AlertContainer';
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { IoCloseCircle } from "react-icons/io5";
 
-export default function TableGroups() {
-  // const [modalOpen, setModalOpen] = useState(false);
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  position: string;
+  role: string;
+  isActive: number;
+  updated_at: string;
+}
+
+export default function TableUsers({ reloadTrigger, onReload }: { reloadTrigger?: number, onReload?: () => void }){
   const [activeModal, setActiveModal] = useState<'detail' | 'edit' | 'delete' | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [search, setSearch] = useState('');
   const { isExpanded } = useSidebar();
@@ -39,11 +53,10 @@ export default function TableGroups() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const deferredSearch = useDeferredValue(search);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [data, setData] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const onShowDetail = () => setActiveModal('detail');
-  const onEditGroup = () => setActiveModal('edit');
-  const onDeleteGroup = () => setActiveModal('delete'); 
-  
+  // CTRL K or Command K
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -59,34 +72,60 @@ export default function TableGroups() {
     };
   }, []);
 
-  interface UserGroups {
-    id: number;
-    groupName: string;
-    groupMembers: number;
-    domainVerificationStatus: string;
-    lastModified: string;
+  const API_URL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/users/all`, {
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch data');
+
+      const result = await res.json();
+      setData(result.Data || result.data || result);
+    } catch (err) {
+      Swal.fire({
+        text: 'Failed to load user data',
+        duration: 2000,
+        icon: "error"
+      });
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const tableData: UserGroups[] = [
-    {
-      id: 1,
-      groupName: 'Marketing Team',
-      groupMembers: 5,
-      domainVerificationStatus: 'i-3.co.id',
-      lastModified: '04/06/2025',
-    },
-    {
-      id: 2,
-      groupName: 'Finance Team',
-      groupMembers: 10,
-      domainVerificationStatus: 'i-3.co.id',
-      lastModified: '04/06/2025',
-    },    
-  ];
+  useEffect(() => {
+    fetchData();
+  }, [reloadTrigger]);
 
-  const data = useMemo(() => tableData, []);
+  useEffect(() => {
+  if (reloadTrigger && reloadTrigger > 0) {
+    fetchData();
+  }
+  }, [reloadTrigger]);
 
-  const columns = useMemo<ColumnDef<UserGroups>[]>(
+  const onShowDetail = (user: User) => {
+    setSelectedUser(user);
+    setActiveModal('detail');
+  };
+
+  const onEditUser = (user: User) => {
+    setSelectedUser(user);
+    setActiveModal('edit');
+  }
+  
+  const onDeleteUser = (user: User) => {
+    setSelectedUser(user);
+    setActiveModal('delete'); 
+  } 
+  
+  const columns = useMemo<ColumnDef<User>[]>(
     () => [
       {
         accessorKey: 'id',
@@ -94,34 +133,85 @@ export default function TableGroups() {
         cell: info => info.row.index + 1,
       },
       {
-        accessorKey: 'groupName',
-        header: 'Group Name',
+        accessorKey: 'name',
+        header: 'Name',
       },
       {
-        accessorKey: 'groupMembers',
-        header: 'Group Members',
+        accessorKey: 'email',
+        header: 'Email',
       },
       {
-        accessorKey: 'domainVerificationStatus',
-        header: 'Domain Verification Status',
+        accessorKey: 'role',
+        header: 'Role',
+        cell:({getValue})=>{
+          const raw = getValue();
+          if(!raw) return '-'
+          return raw;
+        }
       },
       {
-        accessorKey: 'lastModified',
+        accessorKey: 'isActive',
+        header: 'Status',
+        cell:({getValue})=>{
+          const raw = getValue();
+          return raw == true ? <IoIosCheckmarkCircle className='ml-2 w-5 h-4 ' color='green'/> : <IoCloseCircle className='ml-2 w-5 h-4 ' color='gray'/>;
+        }
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Created At',
+        cell: ({ getValue }) => {
+          const raw = getValue();
+          if (!raw) return '-';
+
+          const date = new Date(raw);
+          if (isNaN(date.getTime())) return '-';
+          
+          return date.toLocaleString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }).replace(' pukul ', ' ');
+        }
+      },
+      {
+        accessorKey: 'updatedAt',
         header: 'Last Modified',
+        cell: ({ getValue }) => {
+          const raw = getValue();
+          if (!raw) return '-';
+
+          const date = new Date(raw);
+          if (isNaN(date.getTime())) return '-';
+          
+          return date.toLocaleString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }).replace(' pukul ', ' ');
+        }
       },
       {
         id: 'actions',
         accessorKey: 'actions',
         header: 'Action',
-        cell: () => (
+        cell: (row: CellContext<User, unknown>) => (          
           <div className="flex items-center space-x-2">
-            <Button size="xs" variant="info" onClick={onShowDetail}>
+            <Button size="xs" variant="info" onClick={() => onShowDetail(row.row.original)}>
               <FaCircleInfo />
             </Button>
-            <Button size="xs" variant="warning" onClick={onEditGroup}>
+            <Button size="xs" variant="warning" onClick={() => onEditUser(row.row.original)}>
               <BiSolidEditAlt />
             </Button>
-            <Button size="xs" variant="danger" onClick={onDeleteGroup}>
+            <Button size="xs" variant="danger" onClick={() => onDeleteUser(row.row.original)}>
               <FaRegTrashAlt />
             </Button>
           </div>
@@ -148,6 +238,30 @@ export default function TableGroups() {
     onPaginationChange: setPagination, 
   });
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const API_URL = import.meta.env.VITE_API_URL;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/users/all`, {
+          credentials: 'include',
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error('Failed to fetch data');
+
+        const result = await res.json();
+        setData(result.Data || result.data || result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, [reloadTrigger]);
   return (
     <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03] border border-1-gray-500 dark:border-gray-700">
       <div className="p-4 rounded-lg bg-white dark:bg-white/[0.03]">
@@ -192,7 +306,7 @@ export default function TableGroups() {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search or type command..."
+                placeholder="Search or type user..."
                 className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -206,7 +320,7 @@ export default function TableGroups() {
         </form>
       </div>
 
-      <div className="max-w-full overflow-x-auto">
+      <div className="max-w-full overflow-x-auto xl:overflow-x-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -260,15 +374,36 @@ export default function TableGroups() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map(row => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {isLoading ? (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z" />
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+            ) : table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id} className="px-5 py-3 text-sm text-gray-600 text-center">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="relative h-[40px]">
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+                    No data available
+                  </div>
+                </td>
+              </tr>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -319,7 +454,7 @@ export default function TableGroups() {
                     }`}>
                     {page + 1}
                   </a>
-              );}
+              )}
 
               if (
                 page === currentPage - 2 ||
@@ -354,22 +489,43 @@ export default function TableGroups() {
       </div>
 
       {/* SHOW MODAL */}
-      <ShowGroupDetailModal 
+      <ShowUserDetailModal 
         isOpen={activeModal === 'detail'}
-        onClose={() => setActiveModal(null)}
-      />
+        onClose={() => {
+          setActiveModal(null);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+        />
 
       {/* EDIT MODAL */}
-      <EditGroupModal 
+      <EditUserModal 
         isOpen={activeModal === 'edit'}
-        onClose={() => setActiveModal(null)}
+        onClose={() => {
+          setActiveModal(null);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+        onUserUpdated={() => {
+          fetchData()
+        }
+      }
+        
       />
 
       {/* DELETE MODAL */}
-      <DeleteGroupModal 
+      <DeleteUserModal 
         isOpen={activeModal === 'delete'}
-        onClose={() => setActiveModal(null)}
-      />      
+        onClose={() => {
+          setActiveModal(null);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+        onUserDeleted={() => {
+          fetchData();
+          if (onReload) onReload();
+        }}
+      />   
     </div>
-  );
+  )
 }
